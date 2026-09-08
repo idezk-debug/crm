@@ -7,6 +7,54 @@ This project now supports:
 - Platform owner approval to extend paid access
 - Multi-company usage with strict tenant separation
 
+## Render Deployment (existing services)
+
+Since the Render web service and PostgreSQL database already exist, reuse them. Do not create another database or apply the blueprint as a new service.
+
+In the existing Render web service, configure:
+
+```text
+Build Command: pip install -r requirements.txt && bash build.sh
+Start Command: python manage.py migrate --noinput && gunicorn MyProject.wsgi:application --bind 0.0.0.0:$PORT --workers 2
+```
+
+Add the existing Render PostgreSQL connection string to the web service as `DATABASE_URL`. Also set `DJANGO_SECRET_KEY` to a strong secret and `DJANGO_DEBUG=False`. The existing database remains the source of production data.
+
+If the Pre-Deploy Command field is available on your Render plan, you can use:
+
+```bash
+python manage.py migrate && python manage.py cities_light
+```
+
+If that field is locked, use the start command above and run the city data import once from the Render Shell after the first deploy:
+
+```bash
+python manage.py cities_light
+```
+
+Migrations run automatically before Gunicorn starts, so schema updates still apply on each deploy.
+
+The repository includes `render.yaml` as a reference for these web-service settings; its `DATABASE_URL` is intentionally entered manually so it does not create or replace your existing database.
+
+After deployment, open the existing service URL and create the platform owner:
+
+```bash
+python manage.py createsuperuser
+```
+
+Run that command from a Render Shell, or create the user locally against the hosted database by setting the same `DATABASE_URL`.
+
+For a custom domain, add these Render environment variables:
+
+```text
+DJANGO_ALLOWED_HOSTS=yourdomain.com,www.yourdomain.com
+DJANGO_CSRF_TRUSTED_ORIGINS=https://yourdomain.com,https://www.yourdomain.com
+```
+
+Render web-service disks are ephemeral. Uploaded work files and company logos stored in `media/` can be lost during a redeploy or restart. Use persistent object storage such as Amazon S3 or Cloudinary before relying on production uploads.
+
+The included Render blueprint uses the free PostgreSQL plan when available. Choose a paid database for production workloads and backups.
+
 ## 1. Prepare Server (Ubuntu example)
 
 ```bash
@@ -29,7 +77,7 @@ pip install -r requirements.txt
 
 ## 4. Environment Variables
 
-Set these in shell or service file (see `.env.example`):
+Set these in the server environment or in the project-root `.env` file for self-hosted deployments. Django loads `.env` automatically:
 
 ```bash
 export DJANGO_SECRET_KEY="your-strong-secret"

@@ -4,4 +4,5 @@ django-cities-light==3.11
 phonenumbers==9.0.37
 Pillow==12.1.1
 psycopg[binary]==3.2.10
+gunicorn==23.0.0
 whitenoise==6.12.0

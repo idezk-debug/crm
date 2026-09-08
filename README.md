@@ -36,13 +36,11 @@ pip install -r requirements.txt
 
 ### 4. Environment variables
 
-Copy the example file and edit values:
+Create or edit the `.env` file in the project root. Django loads this file automatically when the project starts.
 
-```bash
-copy .env.example .env
-```
+For local development, set `DJANGO_DEBUG=True` and provide your local or Render PostgreSQL `DATABASE_URL`.
 
-For local development, keep `DJANGO_DEBUG=True`. A dev-only secret key is used automatically when debug is on.
+The `.env` file is ignored by Git and must not be committed because it contains secrets.
 
 ### 5. Database and geo data
 

@@ -49,7 +49,15 @@ if not SECRET_KEY:
 DEBUG = os.getenv("DJANGO_DEBUG", "False").lower() == "true"
 
 ALLOWED_HOSTS = [host.strip() for host in os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",") if host.strip()]
+render_hostname = os.getenv("RENDER_EXTERNAL_HOSTNAME")
+if render_hostname and render_hostname not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(render_hostname)
+
 CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in os.getenv("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(",") if origin.strip()]
+if render_hostname:
+    render_origin = f"https://{render_hostname}"
+    if render_origin not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(render_origin)
 
 
 # Application definition
@@ -124,7 +132,7 @@ WSGI_APPLICATION = 'MyProject.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.getenv('DATABASE_URL'),
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
         conn_max_age=600,
         conn_health_checks=True,
     )
@@ -201,6 +209,7 @@ RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID", "")
 RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET", "")
 
 if not DEBUG:
+    SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")

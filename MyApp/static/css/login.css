@@ -1,6 +1,5 @@
         body.form-login-body {
             background: linear-gradient(120deg, #001f3f, #0074D9, #7FDBFF);
-            background: url("{% static 'images/video' %}") no-repeat center center fixed;
             background-size: 100% 100%;
             animation: gradientShift 10s ease infinite;
             height: 100vh;

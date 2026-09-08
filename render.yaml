@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: crm
+    runtime: python
+    buildCommand: pip install -r requirements.txt && bash build.sh
+    startCommand: python manage.py migrate --noinput && gunicorn MyProject.wsgi:application --bind 0.0.0.0:$PORT --workers 2
+    healthCheckPath: /
+    envVars:
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_DEBUG
+        value: "False"
+      - key: DATABASE_URL
+        sync: false
