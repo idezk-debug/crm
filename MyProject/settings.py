@@ -204,6 +204,23 @@ EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
 EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True").lower() == "true"
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@example.com")
 
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "loggers": {
+        "django.request": {
+            "handlers": ["console"],
+            "level": "ERROR",
+            "propagate": False,
+        },
+    },
+}
+
 # Optional payment gateway keys (Razorpay example for future integration)
 RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID", "")
 RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET", "")
