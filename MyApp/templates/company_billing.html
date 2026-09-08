@@ -1,0 +1,213 @@
+{% extends 'admin_view/base.html' %}
+{% load static %}
+
+{% block title %}Plan & Pricing{% endblock %}
+{% block page_title %}Plan & Pricing{% endblock %}
+
+{% block content %}
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4 p-md-5 bg-primary text-white rounded-4">
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start gap-4">
+            <div>
+                <span class="badge bg-info text-dark mb-3">Flexible Access</span>
+                <h2 class="mb-3">Choose your subscription plan</h2>
+                <p class="mb-3 opacity-85">Your 7-day trial has ended. Pick a permanent plan below to keep using the app with full access, clear team workflows, and client management features.</p>
+            </div>
+            <div class="text-end">
+                <div class="small text-white-75">Current status</div>
+                {% if plan_snapshot.state == "active" %}
+                    <span class="badge bg-success fs-6">Active</span>
+                {% elif plan_snapshot.state == "trial" %}
+                    <span class="badge bg-warning text-dark fs-6">Trial</span>
+                {% else %}
+                    <span class="badge bg-danger fs-6">Expired</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    {% for plan in plan_options %}
+    <div class="col-lg-3 col-md-6">
+        <div class="card h-100 rounded-4 shadow-sm plan-card-card {% if plan.value == 'base' %}border-primary{% endif %}" data-plan="{{ plan.value }}" data-name="{{ plan.name }}" data-price="{{ plan.price|default_if_none:'' }}" data-duration="{{ plan.duration_days }}">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h5 class="fw-semibold mb-1">{{ plan.name }}</h5>
+                        <small class="text-muted">{{ plan.duration_days }} days</small>
+                    </div>
+                    {% if plan.value == 'premium' %}
+                        <span class="badge bg-primary">POPULAR</span>
+                    {% elif plan.value == 'enterprise' %}
+                        <span class="badge bg-secondary">SCALE</span>
+                    {% endif %}
+                </div>
+                {% if plan.contact_only %}
+                    <div class="display-6 fw-bold mb-3">Contact us</div>
+                {% else %}
+                    <div class="display-6 fw-bold mb-3">INR {{ plan.price }}</div>
+                {% endif %}
+                <p class="text-muted small mb-3">{% if plan.value == 'free' %}A quick-start trial for exploring the app with lightweight operations.{% elif plan.value == 'base' %}Perfect for startups and small teams that need reliable daily operations.{% elif plan.value == 'premium' %}Advanced visibility and higher performance for growing companies.{% else %}A full-scale enterprise package with dedicated onboarding and maximum control.{% endif %}</p>
+                <ul class="list-unstyled mb-4 text-muted small">
+                    {% for feature in plan.features %}
+                    <li class="mb-2"><i class="fas fa-check-circle text-info me-2"></i>{{ feature }}</li>
+                    {% endfor %}
+                </ul>
+                {% if plan.contact_only %}
+                    <a href="mailto:{{ website_settings.email|default:company.business_email }}?subject=Enterprise%20Plan%20Enquiry" class="btn w-100 btn-outline-primary">Contact Us</a>
+                {% else %}
+                    <button type="button" class="btn w-100 btn-outline-primary select-plan-btn">{% if plan.value == 'base' %}Selected Plan{% else %}Choose Plan{% endif %}</button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% comment %} <div class="row g-4 mt-2">
+    <div class="col-lg-4">
+        <div class="card rounded-4 shadow-sm border-0 h-100">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="mb-1">Capture Architecture</h5>
+                        <small class="text-primary">{{ plan_snapshot.state|title }} Plan</small>
+                    </div>
+                </div>
+                <div class="my-4">
+                    <div class="h2 mb-1">INR {{ plan_options.1.price }}</div>
+                    <p class="text-muted">Current plan amount</p>
+                </div>
+                <div class="text-muted">
+                    {% if plan_snapshot.state == "trial" %}
+                        Trial is still running for {{ plan_snapshot.days_left }} day(s).
+                    {% elif plan_snapshot.state == "active" %}
+                        Your subscription is active for {{ plan_snapshot.days_left }} more day(s).
+                    {% else %}
+                        Your trial has ended. Choose a plan and submit a request.
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="card rounded-4 shadow-sm border-0 h-100">
+            <div class="card-body p-4">
+                <h5 class="mb-3">Submit subscription request</h5>
+                <form id="paymentForm">
+                    {% csrf_token %}
+                    <input type="hidden" name="selected_plan" id="selectedPlanInput" value="base">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Transaction Reference</label>
+                            <input type="text" class="form-control" name="transaction_reference" placeholder="e.g. UPI/Bank Ref" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Amount (INR)</label>
+                            <input type="text" class="form-control" id="amountInput" value="INR 999.00" readonly>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Note (Optional)</label>
+                            <textarea class="form-control" rows="3" name="note" placeholder="Optional note for the platform admin"></textarea>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <small class="text-muted" id="selectedPlanSummary">Selected plan: Base Plan</small>
+                        <button class="btn btn-primary" type="submit">Submit for approval</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div> {% endcomment %}
+
+{% comment %} <div class="card border-0 shadow-sm mt-4 rounded-4">
+    <div class="card-body p-4">
+        <h5 class="mb-4">Recent subscription requests</h5>
+        <div class="table-responsive">
+            <table class="table table-borderless align-middle">
+                <thead>
+                    <tr class="text-muted small text-uppercase">
+                        <th>Reference</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Requested</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in payments %}
+                    <tr>
+                        <td>{{ p.transaction_reference }}</td>
+                        <td>{{ p.currency }} {{ p.amount }}</td>
+                        <td>
+                            {% if p.status == "approved" %}
+                            <span class="badge bg-success">Approved</span>
+                            {% elif p.status == "rejected" %}
+                            <span class="badge bg-danger">Rejected</span>
+                            {% else %}
+                            <span class="badge bg-warning text-dark">Pending</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ p.requested_at|date:"d M Y, h:i A" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="4" class="text-center text-muted">No payment requests yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div> {% endcomment %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const planCards = document.querySelectorAll('.plan-card-card');
+const selectedPlanInput = document.getElementById('selectedPlanInput');
+const amountInput = document.getElementById('amountInput');
+const selectedPlanSummary = document.getElementById('selectedPlanSummary');
+
+function setSelectedPlan(card) {
+    planCards.forEach((item) => {
+        item.classList.remove('border-primary', 'shadow-sm');
+        item.querySelector('.select-plan-btn').textContent = 'Choose Plan';
+    });
+    card.classList.add('border-primary', 'shadow-sm');
+    card.querySelector('.select-plan-btn').textContent = 'Selected Plan';
+
+    const planValue = card.dataset.plan;
+    const planName = card.dataset.name;
+    const planPrice = card.dataset.price;
+    selectedPlanInput.value = planValue;
+    amountInput.value = `INR ${Number(planPrice).toFixed(2)}`;
+    selectedPlanSummary.textContent = `Selected plan: ${planName}`;
+}
+
+planCards.forEach((card) => {
+    card.addEventListener('click', function () {
+        setSelectedPlan(this);
+    });
+});
+
+const defaultCard = document.querySelector('.plan-card-card[data-plan="base"]');
+if (defaultCard) {
+    setSelectedPlan(defaultCard);
+}
+
+document.getElementById("paymentForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    const res = await fetch("{% url 'submit_payment_request' %}", {
+        method: "POST",
+        headers: { "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value },
+        body: formData
+    });
+    const data = await res.json();
+    alert(data.message || "Request processed.");
+    if (data.status === "success") {
+        window.location.reload();
+    }
+});
+</script>
+{% endblock %}

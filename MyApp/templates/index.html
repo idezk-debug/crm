@@ -1,0 +1,486 @@
+{% load static %}
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>DGcom - Digital Solutions</title>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <meta content="" name="keywords" />
+  <meta content="" name="description" />
+
+  <link href="img/favicon.ico" rel="icon" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css"
+    rel="stylesheet"
+  />
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css"
+    rel="stylesheet"
+  />
+
+  <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet" />
+  <link href="{% static 'css/index.css' %}" rel="stylesheet" />
+
+  <style>
+    :root {
+      --brand-dark: #041b40;
+      --brand-dark-2: #09285c;
+      --brand-white: #f7faff;
+      --brand-red: #ff364a;
+      --panel: rgba(9, 40, 92, 0.55);
+    }
+
+    body {
+      font-family: "Space Grotesk", sans-serif;
+      background: radial-gradient(circle at 10% 10%, #11397d 0%, var(--brand-dark) 45%, #02112b 100%);
+      color: var(--brand-white);
+      overflow-x: hidden;
+    }
+
+    .site-shell {
+      position: relative;
+      min-height: 100vh;
+      isolation: isolate;
+    }
+
+    .site-shell::before {
+      content: "";
+      position: fixed;
+      inset: -25% -15%;
+      background:
+        radial-gradient(circle at 15% 25%, rgba(255, 54, 74, 0.17), transparent 45%),
+        radial-gradient(circle at 85% 0%, rgba(255, 255, 255, 0.08), transparent 48%);
+      z-index: -2;
+      pointer-events: none;
+    }
+
+    .parallax-layer {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(8px);
+      opacity: 0.55;
+      pointer-events: none;
+      z-index: -1;
+      transition: transform 0.1s linear;
+    }
+
+    .layer-one {
+      width: 280px;
+      height: 280px;
+      top: 8%;
+      left: -100px;
+      background: rgba(255, 54, 74, 0.4);
+    }
+
+    .layer-two {
+      width: 380px;
+      height: 380px;
+      top: 58%;
+      right: -170px;
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .neo-nav {
+      background: rgba(4, 27, 64, 0.78);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 54, 74, 0.45);
+    }
+
+    .brand-highlight {
+      border: 2px solid var(--brand-red);
+      border-radius: 999px;
+      padding: 0.4rem 1rem 0.4rem 0.5rem;
+      box-shadow: 0 0 20px rgba(255, 54, 74, 0.3);
+      animation: brandGlow 3s ease-in-out infinite;
+      background: rgba(4, 27, 64, 0.6);
+    }
+
+    .brand-highlight h1 {
+      letter-spacing: 0.06em;
+      font-size: 1.1rem;
+      margin-bottom: 0;
+      color: var(--brand-white);
+      text-transform: uppercase;
+    }
+
+    .brand-logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 2px solid var(--brand-red);
+      object-fit: cover;
+    }
+
+    .neo-nav .nav-link {
+      color: var(--brand-white) !important;
+      position: relative;
+      margin-left: 0.4rem;
+    }
+
+    .neo-nav .nav-link::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 0;
+      height: 2px;
+      background: var(--brand-red);
+      transition: width 0.35s ease;
+    }
+
+    .neo-nav .nav-link:hover::after,
+    .neo-nav .nav-link.active::after {
+      width: 100%;
+    }
+
+    .mod-section {
+      padding: 5rem 0;
+      position: relative;
+    }
+
+    .hero-block {
+      min-height: 88vh;
+      display: flex;
+      align-items: center;
+    }
+
+    .tag-line {
+      display: inline-block;
+      border: 1px solid var(--brand-red);
+      border-radius: 999px;
+      padding: 0.35rem 1rem;
+      margin-bottom: 1rem;
+      font-size: 0.85rem;
+      background: rgba(255, 54, 74, 0.08);
+    }
+
+    .hero-title {
+      font-size: clamp(2rem, 6vw, 4rem);
+      line-height: 1.1;
+      color: var(--brand-white);
+      max-width: 680px;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+    }
+
+    .hero-title span {
+      color: var(--brand-red);
+      text-shadow: 0 0 20px rgba(255, 54, 74, 0.55);
+    }
+
+    .hero-text {
+      max-width: 620px;
+      color: #c6d6f8;
+    }
+
+    .action-btn {
+      border: 2px solid var(--brand-red);
+      background: linear-gradient(130deg, rgba(255, 54, 74, 0.22), rgba(9, 40, 92, 0.2));
+      color: var(--brand-white);
+      border-radius: 999px;
+      padding: 0.8rem 1.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+      animation: pulseButton 2.5s infinite;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-4px) scale(1.03);
+      color: var(--brand-white);
+      box-shadow: 0 10px 30px rgba(255, 54, 74, 0.38);
+      background: linear-gradient(130deg, rgba(255, 54, 74, 0.42), rgba(9, 40, 92, 0.32));
+    }
+
+    .tilt-card {
+      background: var(--panel);
+      border: 1px solid rgba(255, 54, 74, 0.5);
+      border-radius: 1.1rem;
+      transform-style: preserve-3d;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+      transition: transform 0.2s ease;
+    }
+
+    .tilt-content {
+      transform: translateZ(42px);
+    }
+
+    .module-title {
+      font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    .module-title span {
+      color: var(--brand-red);
+    }
+
+    .service-module {
+      background: rgba(9, 40, 92, 0.45);
+      border: 1px solid rgba(255, 54, 74, 0.34);
+      border-radius: 1rem;
+      overflow: hidden;
+      transition: transform 0.35s ease, box-shadow 0.35s ease;
+      height: 100%;
+    }
+
+    .service-module:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.35);
+    }
+
+    .service-module img {
+      aspect-ratio: 16/10;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+
+    .service-module:hover img {
+      transform: scale(1.08);
+    }
+
+    .service-module .content {
+      padding: 1.1rem;
+    }
+
+    .section-panel {
+      background: rgba(4, 27, 64, 0.72);
+      border: 1px solid rgba(255, 54, 74, 0.45);
+      border-radius: 1.2rem;
+      padding: 2rem;
+    }
+
+    .mini-stat {
+      border-left: 3px solid var(--brand-red);
+      padding-left: 0.75rem;
+    }
+
+    .neo-footer {
+      border-top: 1px solid rgba(255, 54, 74, 0.45);
+      background: rgba(2, 17, 43, 0.8);
+    }
+
+    @keyframes pulseButton {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(255, 54, 74, 0.55); }
+      70% { box-shadow: 0 0 0 16px rgba(255, 54, 74, 0); }
+    }
+
+    @keyframes brandGlow {
+      0%, 100% { box-shadow: 0 0 12px rgba(255, 54, 74, 0.3); }
+      50% { box-shadow: 0 0 26px rgba(255, 54, 74, 0.6); }
+    }
+
+    @media (max-width: 991.98px) {
+      .hero-block {
+        min-height: auto;
+        padding-top: 2rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="site-shell">
+    <span class="parallax-layer layer-one" data-parallax="0.16"></span>
+    <span class="parallax-layer layer-two" data-parallax="-0.12"></span>
+
+    <nav class="navbar navbar-expand-lg neo-nav navbar-dark sticky-top px-lg-5 py-3">
+      <a href="index.html" class="navbar-brand">
+        <div class="d-flex align-items-center brand-highlight">
+          <img src="{% static 'img/main_logo.jpg' %}" alt="DGcom Logo" class="brand-logo me-2" />
+          <h1>DGcom</h1>
+        </div>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarCollapse">
+        <div class="navbar-nav ms-auto">
+          <a href="index.html" class="nav-item nav-link active">Home</a>
+          <a href="about.html" class="nav-item nav-link">About</a>
+          <a href="service.html" class="nav-item nav-link">Services</a>
+          <a href="project.html" class="nav-item nav-link">Projects</a>
+          <a href="contact.html" class="nav-item nav-link">Contact</a>
+        </div>
+      </div>
+    </nav>
+
+    <section class="mod-section hero-block">
+      <div class="container">
+        <div class="row g-4 align-items-center">
+          <div class="col-lg-7">
+            <span class="tag-line">Future-Ready Digital Engineering</span>
+            <h2 class="hero-title">Modular Builds With <span>3D Motion</span> And Parallax Energy</h2>
+            <p class="hero-text mb-4">
+              We design CRM, HRM, AI, and analytics systems with performance-first architecture and immersive visual
+              storytelling for modern brands.
+            </p>
+            <div class="d-flex flex-wrap gap-3">
+              <a class="btn action-btn" href="{% url 'crm_landing' %}">Launch CRM</a>
+              <a class="btn action-btn" href="service.html">Explore Services</a>
+            </div>
+          </div>
+          <div class="col-lg-5">
+            <div class="tilt-card p-4" data-tilt>
+              <div class="tilt-content">
+                <img src="{% static 'img/about.jpg' %}" class="img-fluid rounded mb-3" alt="Digital team" />
+                <h4 class="text-white">Live Interactive Experience</h4>
+                <p class="mb-0 text-light">
+                  Scroll and move your cursor to feel layered depth, smooth module animations, and dynamic UI response.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mod-section">
+      <div class="container">
+        <div class="row g-4 align-items-center">
+          <div class="col-lg-6">
+            <div class="section-panel">
+              <h3 class="module-title">About <span>Scientiaarc</span></h3>
+              <p>
+                At Scientiaarc Solutions LLP, we create practical systems that scale with your business, from process
+                automation to AI-powered decision support.
+              </p>
+              <p class="mb-0">
+                Our modular delivery model helps teams launch faster, improve clarity across departments, and maintain
+                long-term reliability.
+              </p>
+
+            </div>
+          </div>
+          <div class="col-lg-6"> 
+            <div class="row g-3">
+              <div class="col-6">
+                <div class="section-panel mini-stat">
+                  <h4 class="text-white mb-1">10+</h4>
+                  <small> Years Experience </small>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="section-panel mini-stat">
+                  <h4 class="text-white mb-1">120+</h4>
+                  <small>Projects Delivered</small>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="section-panel mini-stat">
+                  <h4 class="text-white mb-1">24/7</h4>
+                  <small>Support Structure</small>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="section-panel mini-stat">
+                  <h4 class="text-white mb-1">A+</h4>
+                  <small>Execution Quality</small>  
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mod-section">
+      <div class="container">
+        <div class="text-center mb-5">
+          <h3 class="module-title">Service <span>Modules</span></h3>
+          <p class="mx-auto" style="max-width: 680px;">
+            Reusable service blocks designed for clarity, speed, and strong visual presence.
+          </p>
+        </div>
+        <div class="row g-4">
+          <div class="col-lg-4 col-md-6">
+            <a class="service-module d-block" href="{% url 'crm_landing' %}">
+              <img src="{% static 'img/service-1.jpg' %}" class="img-fluid w-100" alt="CRM Service" />
+              <div class="content">
+                <h5 class="text-white">CRM</h5>
+                <p class="mb-0 text-light">Process tracking, lead pipelines, and smart automations.</p>
+              </div>
+            </a>
+          </div>
+          <div class="col-lg-4 col-md-6">
+            <a class="service-module d-block" href="#">
+              <img src="{% static 'img/service-2.jpg' %}" class="img-fluid w-100" alt="HRM Service" />
+              <div class="content">
+                <h5 class="text-white">HRM</h5>
+                <p class="mb-0 text-light">People operations, attendance, payroll, and reporting.</p>
+              </div>
+            </a>
+          </div>
+          <div class="col-lg-4 col-md-6">
+            <a class="service-module d-block" href="#">
+              <img src="{% static 'img/service-3.jpg' %}" class="img-fluid w-100" alt="AI Service" />
+              <div class="content">
+                <h5 class="text-white">AI</h5>
+                <p class="mb-0 text-light">Prediction, optimization, and insight acceleration.</p>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mod-section pt-0 pb-5">
+      <div class="container">
+        <div class="section-panel text-center">
+          <h3 class="module-title mb-3">Need A <span>Custom Stack</span>?</h3>
+          <p class="mb-4">Tell us your workflow and we will map the right modular architecture for your growth.</p>
+          <a class="btn action-btn" href="contact.html">Start Project</a>
+        </div>
+      </div>
+    </section>
+
+    <footer class="neo-footer py-4">
+      <div class="container d-flex flex-column flex-md-row justify-content-between gap-2">
+        <span>&copy; DGcom. All rights reserved.</span>
+        <span>Designed by <a href="https://www.scientiaarc.com/" target="_blank" class="text-white">SCIENTIAARC</a></span>
+      </div>
+    </footer>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="{% static 'js/index.js' %}"></script>
+
+  <script>
+    (function () {
+      var tiltCards = document.querySelectorAll("[data-tilt]");
+      tiltCards.forEach(function (card) {
+        card.addEventListener("mousemove", function (e) {
+          var rect = card.getBoundingClientRect();
+          var x = e.clientX - rect.left;
+          var y = e.clientY - rect.top;
+          var rotateX = ((y / rect.height) - 0.5) * -12;
+          var rotateY = ((x / rect.width) - 0.5) * 12;
+          card.style.transform = "perspective(850px) rotateX(" + rotateX + "deg) rotateY(" + rotateY + "deg)";
+        });
+        card.addEventListener("mouseleave", function () {
+          card.style.transform = "perspective(850px) rotateX(0deg) rotateY(0deg)";
+        });
+      });
+
+      var layers = document.querySelectorAll("[data-parallax]");
+      window.addEventListener("scroll", function () {
+        var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        layers.forEach(function (layer) {
+          var speed = parseFloat(layer.getAttribute("data-parallax")) || 0;
+          layer.style.transform = "translate3d(0, " + scrollTop * speed + "px, 0)";
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

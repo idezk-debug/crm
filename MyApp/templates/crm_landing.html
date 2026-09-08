@@ -1,0 +1,402 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>CRM Solutions | Scientiaarc Solutions LLP</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --crm-primary: #0b5ed7;
+            --crm-dark: #081120;
+            --crm-accent: #18c2c0;
+            --crm-soft: #eef6ff;
+            --crm-text: #4d5b70;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Open Sans", sans-serif;
+            color: var(--crm-dark);
+            background:
+                radial-gradient(circle at top left, rgba(24, 194, 192, 0.16), transparent 30%),
+                radial-gradient(circle at right center, rgba(11, 94, 215, 0.18), transparent 28%),
+                linear-gradient(135deg, #f9fcff 0%, #edf4ff 45%, #ffffff 100%);
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .crm-page {
+            min-height: 100vh;
+            padding: 36px 20px 60px;
+        }
+
+        .crm-shell {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .crm-topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 42px;
+            flex-wrap: wrap;
+        }
+
+        .crm-brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .crm-brand img {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            object-fit: cover;
+            box-shadow: 0 12px 25px rgba(11, 94, 215, 0.16);
+        }
+
+        .crm-brand h1 {
+            font-size: 1.1rem;
+            margin: 0;
+            font-weight: 800;
+        }
+
+        .crm-brand p {
+            margin: 2px 0 0;
+            color: var(--crm-text);
+            font-size: 0.92rem;
+        }
+
+        .crm-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 24px;
+            border-radius: 999px;
+            font-weight: 700;
+            transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+        }
+
+        .crm-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .crm-btn-primary {
+            background: linear-gradient(135deg, var(--crm-primary), #0f7bf2);
+            color: #fff;
+            box-shadow: 0 18px 35px rgba(11, 94, 215, 0.24);
+        }
+
+        .crm-btn-secondary {
+            background: #fff;
+            color: var(--crm-dark);
+            border: 1px solid rgba(8, 17, 32, 0.08);
+        }
+
+        .crm-hero {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 34px;
+            align-items: center;
+            margin-bottom: 34px;
+        }
+
+        .crm-copy .crm-kicker {
+            display: inline-block;
+            padding: 9px 16px;
+            border-radius: 999px;
+            background: rgba(24, 194, 192, 0.12);
+            color: #0a7978;
+            font-weight: 700;
+            margin-bottom: 18px;
+        }
+
+        .crm-copy h2 {
+            font-size: clamp(2.2rem, 4vw, 4.5rem);
+            line-height: 1.08;
+            margin: 0 0 18px;
+            font-weight: 800;
+        }
+
+        .crm-copy h2 span {
+            color: var(--crm-primary);
+        }
+
+        .crm-copy p {
+            margin: 0 0 28px;
+            font-size: 1.04rem;
+            line-height: 1.8;
+            color: var(--crm-text);
+            max-width: 640px;
+        }
+
+        .crm-actions {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .crm-visual {
+            position: relative;
+            padding: 26px;
+            border-radius: 30px;
+            background: linear-gradient(160deg, rgba(8, 17, 32, 0.96), rgba(11, 94, 215, 0.9));
+            color: #fff;
+            overflow: hidden;
+            box-shadow: 0 26px 60px rgba(8, 17, 32, 0.22);
+        }
+
+        .crm-visual::before,
+        .crm-visual::after {
+            content: "";
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .crm-visual::before {
+            width: 180px;
+            height: 180px;
+            top: -40px;
+            right: -30px;
+        }
+
+        .crm-visual::after {
+            width: 110px;
+            height: 110px;
+            bottom: -18px;
+            left: -20px;
+        }
+
+        .crm-stat-grid {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .crm-stat {
+            padding: 18px;
+            border-radius: 22px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(8px);
+        }
+
+        .crm-stat strong {
+            display: block;
+            font-size: 1.7rem;
+            margin-bottom: 6px;
+        }
+
+        .crm-stat span {
+            color: rgba(255, 255, 255, 0.82);
+            font-size: 0.95rem;
+        }
+
+        .crm-note {
+            position: relative;
+            z-index: 1;
+            margin-top: 18px;
+            padding: 18px 20px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            line-height: 1.7;
+        }
+
+        .crm-features {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 20px;
+            margin-top: 22px;
+        }
+
+        .crm-card {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(11, 94, 215, 0.08);
+            border-radius: 24px;
+            padding: 26px;
+            box-shadow: 0 18px 40px rgba(17, 41, 77, 0.08);
+        }
+
+        .crm-card i {
+            width: 52px;
+            height: 52px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            background: var(--crm-soft);
+            color: var(--crm-primary);
+            font-size: 1.25rem;
+            margin-bottom: 16px;
+        }
+
+        .crm-card h3 {
+            margin: 0 0 10px;
+            font-size: 1.2rem;
+        }
+
+        .crm-card p {
+            margin: 0;
+            color: var(--crm-text);
+            line-height: 1.75;
+        }
+
+        .crm-cta {
+            margin-top: 28px;
+            padding: 28px;
+            border-radius: 28px;
+            background: linear-gradient(135deg, #0d203d, #0b5ed7);
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .crm-cta h3 {
+            margin: 0 0 8px;
+            font-size: 1.5rem;
+        }
+
+        .crm-cta p {
+            margin: 0;
+            color: rgba(255, 255, 255, 0.82);
+            line-height: 1.7;
+        }
+
+        @media (max-width: 991px) {
+            .crm-hero,
+            .crm-features {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 575px) {
+            .crm-page {
+                padding-left: 14px;
+                padding-right: 14px;
+            }
+
+            .crm-stat-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .crm-copy h2 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="crm-page">
+        <div class="crm-shell">
+            <div class="crm-topbar">
+                <div class="crm-brand">
+                    <img src="{% static 'img/logo.png' %}" alt="Scientiaarc Logo">
+                    <div>
+                        <h1>SCIENTIAARC SOLUTIONS LLP</h1>
+                        <p>CRM landing page for your client access flow</p>
+                    </div>
+                </div>
+                <a class="crm-btn crm-btn-secondary" href="{% url 'index' %}">
+                    <i class="fas fa-arrow-left"></i> Back to Home
+                </a>
+            </div>
+
+            <section class="crm-hero">
+                <div class="crm-copy">
+                    <span class="crm-kicker">Customer Relationship Management</span>
+                    <h2>Build stronger customer journeys with a <span>clean, connected CRM</span>.</h2>
+                    <p>
+                        Centralize leads, conversations, follow-ups, team activity, and pipeline tracking in one focused workspace.
+                        This CRM experience is designed to help your team respond faster, close smarter, and stay organized at every stage.
+                    </p>
+                    <div class="crm-actions">
+                        <a class="crm-btn crm-btn-primary" href="{% url 'login' %}">
+                            <i class="fas fa-sign-in-alt"></i> Login to CRM
+                        </a>
+                        <a class="crm-btn crm-btn-secondary" href="{% url 'register_company' %}">
+                            <i class="fas fa-building"></i> Start 7-Day Trial
+                        </a>
+                        <a class="crm-btn crm-btn-secondary" href="#crm-features">
+                            <i class="fas fa-layer-group"></i> Explore Features
+                        </a>
+                    </div>
+                </div>
+
+                <div class="crm-visual">
+                    <div class="crm-stat-grid">
+                        <div class="crm-stat">
+                            <strong>360°</strong>
+                            <span>Complete customer visibility</span>
+                        </div>
+                        <div class="crm-stat">
+                            <strong>24/7</strong>
+                            <span>Always-on sales follow-up flow</span>
+                        </div>
+                        <div class="crm-stat">
+                            <strong>1 Hub</strong>
+                            <span>Tasks, leads, and communication together</span>
+                        </div>
+                        <div class="crm-stat">
+                            <strong>Fast</strong>
+                            <span>Clear dashboards for instant actions</span>
+                        </div>
+                    </div>
+                    <div class="crm-note">
+                        A focused CRM helps sales teams reduce missed opportunities, maintain consistent follow-up, and deliver a better customer experience without switching between multiple tools.
+                    </div>
+                </div>
+            </section>
+
+            <section class="crm-features" id="crm-features">
+                <div class="crm-card">
+                    <i class="fas fa-users"></i>
+                    <h3>Lead & Contact Management</h3>
+                    <p>Organize prospects, clients, and communication history in one place so your team always works with the latest information.</p>
+                </div>
+                <div class="crm-card">
+                    <i class="fas fa-funnel-dollar"></i>
+                    <h3>Pipeline Clarity</h3>
+                    <p>Track every stage from inquiry to conversion with a structured view that helps teams prioritize the right opportunities.</p>
+                </div>
+                <div class="crm-card">
+                    <i class="fas fa-chart-line"></i>
+                    <h3>Actionable Insights</h3>
+                    <p>Measure engagement, identify bottlenecks, and make faster business decisions with easy-to-understand performance snapshots.</p>
+                </div>
+            </section>
+
+            <section class="crm-cta">
+                <div>
+                    <h3>Ready to continue?</h3>
+                    <p>Use the CRM access button to move to your existing login page and enter the platform.</p>
+                </div>
+                <a class="crm-btn crm-btn-primary" href="{% url 'login' %}">
+                    <i class="fas fa-arrow-right"></i> Continue to Login
+                </a>
+            </section>
+        </div>
+    </div>
+</body>
+
+</html>

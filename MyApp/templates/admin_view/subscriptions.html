@@ -1,0 +1,174 @@
+{% extends 'admin_view/base.html' %}
+{% block title %}Subscriptions{% endblock %}
+{% block page_title %}Subscriptions{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div>
+                    <h5 class="mb-1">Subscription Management</h5>
+                    <p class="text-muted mb-0">Global website settings + all companies and subscription status.</p>
+                </div>
+                <div class="btn-group" role="group" aria-label="Dashboard controls">
+                    <a href="{% url 'admin_settings' %}" class="btn btn-primary btn-sm">Website Settings</a>
+                    {% if has_owned_company %}
+                    <a href="{% url 'company_dashboard' %}" class="btn btn-outline-primary btn-sm">Company Dashboard</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-lg-4 col-md-6 mb-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <h6 class="text-muted mb-2">Site Name</h6>
+                <h5 class="mb-0">{{ website_settings.site_name }}</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-6 mb-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <h6 class="text-muted mb-2">Active Company Access</h6>
+                <h5 class="mb-0 text-success">{{ active_count }}</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-6 mb-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <h6 class="text-muted mb-2">Expired Company Access</h6>
+                <h5 class="mb-0 text-danger">{{ expired_count }}</h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Company Subscription Overview</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle">
+                        <thead>
+                            <tr>
+                                <th>Company</th>
+                                <th>Company ID</th>
+                                <th>Trial End</th>
+                                <th>Subscription End</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for c in companies %}
+                            <tr>
+                                <td>{{ c.name }}</td>
+                                <td>{{ c.code }}</td>
+                                <td>{{ c.trial_ends_at|date:"d M Y, h:i A" }}</td>
+                                <td>{% if c.plan_expires_at %}{{ c.plan_expires_at|date:"d M Y, h:i A" }}{% else %}-{% endif %}</td>
+                                <td>
+                                    {% if c.has_active_access %}
+                                    <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                    <span class="badge bg-danger">Expired</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="5" class="text-center text-muted">No companies found.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Payment Requests</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle">
+                        <thead>
+                            <tr>
+                                <th>Company</th>
+                                <th>Reference</th>
+                                <th>Amount</th>
+                                <th>Plan</th>
+                                <th>Status</th>
+                                <th>Requested</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in payments %}
+                            <tr>
+                                <td>{{ p.company.name }}</td>
+                                <td>{{ p.transaction_reference }}</td>
+                                <td>{{ p.currency }} {{ p.amount }}</td>
+                                <td>{{ p.get_selected_plan_display|default:"-" }}</td>
+                                <td>
+                                    {% if p.status == "approved" %}
+                                    <span class="badge bg-success">Approved</span>
+                                    {% elif p.status == "rejected" %}
+                                    <span class="badge bg-danger">Rejected</span>
+                                    {% else %}
+                                    <span class="badge bg-warning text-dark">Pending</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ p.requested_at|date:"d M Y, h:i A" }}</td>
+                                <td>
+                                    {% if request.user.is_superuser and p.status == "pending" %}
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-sm btn-success payment-action" data-id="{{ p.id }}" data-action="approve">Approve</button>
+                                        <button class="btn btn-sm btn-danger payment-action" data-id="{{ p.id }}" data-action="reject">Reject</button>
+                                    </div>
+                                    {% else %}
+                                    <span class="text-muted">No action</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="7" class="text-center text-muted">No payment requests.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.querySelectorAll(".payment-action").forEach((btn) => {
+    btn.addEventListener("click", async function () {
+        const paymentId = this.dataset.id;
+        const action = this.dataset.action;
+        const csrfToken = "{{ csrf_token }}";
+        const formData = new FormData();
+        formData.append("action", action);
+        const res = await fetch(`/payment-review/${paymentId}/`, {
+            method: "POST",
+            headers: { "X-CSRFToken": csrfToken },
+            body: formData
+        });
+        const data = await res.json();
+        alert(data.message || "Done");
+        if (data.status === "success") {
+            window.location.reload();
+        }
+    });
+});
+</script>
+{% endblock %}

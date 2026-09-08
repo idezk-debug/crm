@@ -1,0 +1,114 @@
+{% extends 'admin_view/base.html' %}
+{% load static %}
+
+{% block title %}Notifications{% endblock %}
+{% block page_title %}Notifications{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title mb-0"><i class="fas fa-paper-plane me-2"></i>Send Notification</h5>
+      </div>
+      <div class="card-body">
+        <form method="post" action="{% url 'send_notification' %}">
+          {% csrf_token %}
+
+          {% if can_send_to_staff %}
+          <div class="mb-3">
+            <label class="form-label">Send To</label>
+            <select name="target" class="form-select" required>
+              <option value="clients">All Clients</option>
+              <option value="staffs">All Staffs</option>
+              <option value="clients_staffs">Clients + Staffs</option>
+            </select>
+          </div>
+          {% else %}
+          <input type="hidden" name="target" value="clients">
+          <p class="text-muted small mb-3">You can send notifications only to clients.</p>
+          {% endif %}
+
+          <div class="mb-3">
+            <label class="form-label">Message</label>
+            <textarea name="message" class="form-control" rows="5" maxlength="1000" required placeholder="Type your notification..."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100">Send Notification</button>
+          <p class="text-muted small mt-2 mb-0">Notifications auto-delete after 24 hours.</p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0"><i class="fas fa-bell me-2"></i>Active Notifications</h5>
+        <span class="badge bg-primary">{{ notifications|length }}</span>
+      </div>
+      <div class="card-body">
+        {% if notifications %}
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>From</th>
+                <th>To</th>
+                <th>Message</th>
+                <th>Sent</th>
+                <th>Expires</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for n in notifications %}
+              <tr>
+                <td>{{ n.sender.username }}</td>
+                <td>{{ n.recipient.username }}</td>
+                <td style="max-width: 260px; white-space: pre-wrap;">{{ n.message }}</td>
+                <td>{{ n.created_at|date:"d M Y, h:i A" }}</td>
+                <td>{{ n.expires_at|date:"d M Y, h:i A" }}</td>
+                <td>
+                  {% if n.deletion_request and n.recipient_id == request.user.id and n.deletion_request.status == 'pending' %}
+                  <div class="d-flex gap-2">
+                    <form method="post" action="{% url 'handle_deletion_request' n.deletion_request.id %}" onsubmit="return confirm('Approve this delete request?');">
+                      {% csrf_token %}
+                      <input type="hidden" name="action" value="approve">
+                      <button type="submit" class="btn btn-sm btn-success">Approve</button>
+                    </form>
+                    <form method="post" action="{% url 'handle_deletion_request' n.deletion_request.id %}" onsubmit="return confirm('Reject this delete request?');">
+                      {% csrf_token %}
+                      <input type="hidden" name="action" value="reject">
+                      <button type="submit" class="btn btn-sm btn-outline-secondary">Reject</button>
+                    </form>
+                  </div>
+                  {% elif can_delete_notifications %}
+                  <form method="post" action="{% url 'delete_notification' n.id %}" onsubmit="return confirm('Delete this notification?');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                  </form>
+                  {% else %}
+                  {% if n.sender_id == request.user.id %}
+                  <span class="badge bg-info">Sent</span>
+                  {% else %}
+                  <span class="badge bg-secondary">Received</span>
+                  {% endif %}
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+          <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+          <p class="text-muted mb-0">No active notifications.</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

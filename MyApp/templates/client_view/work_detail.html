@@ -1,0 +1,271 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Work Details</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'css/work_detail.css' %}">
+
+</head>
+
+<body data-ui-mode="light"
+      data-role-default-mode="light"
+      data-role-default-variant="sunset">
+    {% include 'partials/messages_toast.html' %}
+    {% csrf_token %}
+    {% include 'client_view/sidebar.html' %}
+
+    <div class="main-content">
+
+        <h3 class="fw-bold mb-4">{{ work.title }}</h3>
+
+        <div class="work-card p-4 mb-4">
+
+            <p><strong>Description:</strong> {{ work.description }}</p>
+
+            <p><strong>Deadline:</strong> {{ work.deadline }}</p>
+
+            <p>
+                <strong>Status:</strong>
+
+                {% if work.status == "Completed" %}
+                <span class="badge bg-success">{{ work.status }}</span>
+
+                {% elif work.status == "Ongoing" %}
+                <span class="badge bg-warning text-dark">{{ work.status }}</span>
+
+                {% else %}
+                <span class="badge bg-secondary">{{ work.status }}</span>
+                {% endif %}
+
+            </p>
+
+        </div>
+
+
+        <h4 class="fw-bold mb-3">Work Files</h4>
+        <div class="work-card p-3">
+            {% if file_groups.images or file_groups.documents or file_groups.excel or file_groups.others %}
+
+            {% if file_groups.images %}
+            <section class="file-group-block">
+                <div class="file-group-head">
+                    <h6><i class="bi bi-images me-2"></i>Images</h6>
+                    <span class="group-count">{{ file_groups.images|length }}</span>
+                </div>
+                <div class="client-file-grid">
+                    {% for f in file_groups.images %}
+                    <article class="client-file-card" id="file-{{ f.id }}">
+                        <div class="file-cell">
+                            <span class="file-icon-wrap">
+                                <i class="bi {{ f.file_icon }}"></i>
+                            </span>
+                            <div>
+                                <div class="file-name">{{ f.original_name }}</div>
+                                <div class="file-type">IMAGE</div>
+                            </div>
+                        </div>
+                        <div class="file-meta-line">Uploaded: {{ f.uploaded_at|date:"d M Y, h:i A" }}</div>
+                        <div class="file-meta-line">Expires: {{ f.expires_at|date:"d M Y, h:i A" }}</div>
+                        <div class="file-actions-row">
+                            <a href="{% url 'preview_work_file' f.id %}" target="_blank" class="action-btn preview">Preview</a>
+                            <a href="{% url 'download_work_file' f.id %}" class="action-btn download">Download</a>
+                            {% if can_delete_files %}
+                            <button type="button" class="action-btn delete" onclick="deleteFile({{ f.id }})">Delete</button>
+                            {% endif %}
+                        </div>
+                    </article>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endif %}
+
+            {% if file_groups.documents %}
+            <section class="file-group-block">
+                <div class="file-group-head">
+                    <h6><i class="bi bi-file-earmark-text me-2"></i>Documents</h6>
+                    <span class="group-count">{{ file_groups.documents|length }}</span>
+                </div>
+                <div class="client-file-grid">
+                    {% for f in file_groups.documents %}
+                    <article class="client-file-card" id="file-{{ f.id }}">
+                        <div class="file-cell">
+                            <span class="file-icon-wrap">
+                                <i class="bi {{ f.file_icon }}"></i>
+                            </span>
+                            <div>
+                                <div class="file-name">{{ f.original_name }}</div>
+                                <div class="file-type">{{ f.extension|upper }}</div>
+                            </div>
+                        </div>
+                        <div class="file-meta-line">Uploaded: {{ f.uploaded_at|date:"d M Y, h:i A" }}</div>
+                        <div class="file-meta-line">Expires: {{ f.expires_at|date:"d M Y, h:i A" }}</div>
+                        <div class="file-actions-row">
+                            <a href="{% url 'preview_work_file' f.id %}" target="_blank" class="action-btn preview">Preview</a>
+                            <a href="{% url 'download_work_file' f.id %}" class="action-btn download">Download</a>
+                            {% if can_delete_files %}
+                            <button type="button" class="action-btn delete" onclick="deleteFile({{ f.id }})">Delete</button>
+                            {% endif %}
+                        </div>
+                    </article>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endif %}
+
+            {% if file_groups.excel %}
+            <section class="file-group-block">
+                <div class="file-group-head">
+                    <h6><i class="bi bi-file-earmark-excel me-2"></i>Excel</h6>
+                    <span class="group-count">{{ file_groups.excel|length }}</span>
+                </div>
+                <div class="client-file-grid">
+                    {% for f in file_groups.excel %}
+                    <article class="client-file-card" id="file-{{ f.id }}">
+                        <div class="file-cell">
+                            <span class="file-icon-wrap">
+                                <i class="bi {{ f.file_icon }}"></i>
+                            </span>
+                            <div>
+                                <div class="file-name">{{ f.original_name }}</div>
+                                <div class="file-type">{{ f.extension|upper }}</div>
+                            </div>
+                        </div>
+                        <div class="file-meta-line">Uploaded: {{ f.uploaded_at|date:"d M Y, h:i A" }}</div>
+                        <div class="file-meta-line">Expires: {{ f.expires_at|date:"d M Y, h:i A" }}</div>
+                        <div class="file-actions-row">
+                            <a href="{% url 'preview_work_file' f.id %}" target="_blank" class="action-btn preview">Preview</a>
+                            <a href="{% url 'download_work_file' f.id %}" class="action-btn download">Download</a>
+                            {% if can_delete_files %}
+                            <button type="button" class="action-btn delete" onclick="deleteFile({{ f.id }})">Delete</button>
+                            {% endif %}
+                        </div>
+                    </article>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endif %}
+
+            {% if file_groups.others %}
+            <section class="file-group-block">
+                <div class="file-group-head">
+                    <h6><i class="bi bi-file-earmark me-2"></i>Other Files</h6>
+                    <span class="group-count">{{ file_groups.others|length }}</span>
+                </div>
+                <div class="client-file-grid">
+                    {% for f in file_groups.others %}
+                    <article class="client-file-card" id="file-{{ f.id }}">
+                        <div class="file-cell">
+                            <span class="file-icon-wrap">
+                                <i class="bi {{ f.file_icon }}"></i>
+                            </span>
+                            <div>
+                                <div class="file-name">{{ f.original_name }}</div>
+                                <div class="file-type">{{ f.extension|upper }}</div>
+                            </div>
+                        </div>
+                        <div class="file-meta-line">Uploaded: {{ f.uploaded_at|date:"d M Y, h:i A" }}</div>
+                        <div class="file-meta-line">Expires: {{ f.expires_at|date:"d M Y, h:i A" }}</div>
+                        <div class="file-actions-row">
+                            <a href="{% url 'preview_work_file' f.id %}" target="_blank" class="action-btn preview">Preview</a>
+                            <a href="{% url 'download_work_file' f.id %}" class="action-btn download">Download</a>
+                            {% if can_delete_files %}
+                            <button type="button" class="action-btn delete" onclick="deleteFile({{ f.id }})">Delete</button>
+                            {% endif %}
+                        </div>
+                    </article>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endif %}
+
+            {% else %}
+            <p class="text-muted mb-0">No files uploaded yet.</p>
+            {% endif %}
+        </div>
+
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function getResolvedMode(mode) {
+            if (mode !== "system") {
+                return mode;
+            }
+            return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+
+        function applyClientTheme(mode, variant) {
+            const resolvedMode = getResolvedMode(mode);
+            document.body.dataset.uiMode = resolvedMode;
+            document.body.dataset.themeVariant = variant;
+            document.documentElement.setAttribute("data-bs-theme", resolvedMode);
+        }
+
+        const themeModeSelect = document.getElementById("clientThemeModeSelect");
+        const themeVariantSelect = document.getElementById("clientThemeVariantSelect");
+        if (themeModeSelect && themeVariantSelect) {
+            const storedMode = localStorage.getItem("crm_theme_mode");
+            const storedVariant = localStorage.getItem("crm_theme_variant");
+            const initialMode = storedMode || document.body.dataset.roleDefaultMode || "light";
+            const initialVariant = storedVariant || document.body.dataset.roleDefaultVariant || "sunset";
+            themeModeSelect.value = initialMode;
+            themeVariantSelect.value = initialVariant;
+            applyClientTheme(initialMode, initialVariant);
+
+            const persistTheme = () => {
+                const mode = themeModeSelect.value || "light";
+                const variant = themeVariantSelect.value || "default";
+                localStorage.setItem("crm_theme_mode", mode);
+                localStorage.setItem("crm_theme_variant", variant);
+                applyClientTheme(mode, variant);
+            };
+
+            themeModeSelect.addEventListener("change", persistTheme);
+            themeVariantSelect.addEventListener("change", persistTheme);
+
+            const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+            mediaQuery.addEventListener("change", () => {
+                if (themeModeSelect.value === "system") {
+                    applyClientTheme("system", themeVariantSelect.value || "default");
+                }
+            });
+        }
+    </script>
+    <script>
+        function deleteFile(fileId) {
+            if (!confirm("Delete this file?")) return;
+
+            const csrfTokenInput = document.querySelector('[name=csrfmiddlewaretoken]');
+            if (!csrfTokenInput) {
+                alert("CSRF token not found.");
+                return;
+            }
+
+            fetch(`/delete-image/${fileId}/`, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": csrfTokenInput.value,
+                    "X-Requested-With": "XMLHttpRequest"
+                }
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === "success") {
+                        const card = document.getElementById(`file-${fileId}`);
+                        if (card) card.remove();
+                    } else {
+                        alert(data.message || "Delete failed");
+                    }
+                })
+                .catch(() => alert("Delete error"));
+        }
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,112 @@
+:root {
+    --sidebar-bg: linear-gradient(180deg, #1f3a5f 0%, #182f4e 100%);
+    --sidebar-text: #cfdded;
+    --sidebar-active: #ffffff;
+    --sidebar-hover: rgba(255, 255, 255, 0.1);
+    --sidebar-border: rgba(255, 255, 255, 0.15);
+}
+
+.sidebar {
+    width: 260px;
+    height: 100vh;
+    background: var(--sidebar-bg);
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding: 18px 0;
+    color: var(--sidebar-active);
+    transition: transform 0.3s ease;
+    z-index: 2000;
+    box-shadow: 3px 0 18px rgba(7, 22, 41, 0.22);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar h4 {
+    color: var(--sidebar-active);
+    font-size: 1.15rem;
+    letter-spacing: 0.2px;
+    padding: 0 16px;
+}
+
+.sidebar a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 6px 12px;
+    padding: 11px 13px;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    font-weight: 600;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.sidebar a.active {
+    background: var(--sidebar-hover);
+    color: var(--sidebar-active);
+    border-color: var(--sidebar-border);
+}
+
+.sidebar-footer-link {
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.sidebar-bottom {
+    margin-top: auto;
+}
+
+.company-contact {
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+    padding-top: 10px;
+}
+
+.sidebar-footer-link a {
+    background: rgba(220, 53, 69, 0.18);
+    color: #ffd5d5;
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.sidebar-footer-link a:hover {
+    background: rgba(220, 53, 69, 0.28);
+    color: #ffffff;
+}
+
+.sidebar a:hover {
+    background: var(--sidebar-hover);
+    color: var(--sidebar-active);
+    border-color: var(--sidebar-border);
+}
+
+.sidebar a i {
+    font-size: 1rem;
+}
+
+#closeSidebar {
+    color: #fff !important;
+    border: 0;
+    opacity: 0.9;
+}
+
+#closeSidebar:hover {
+    opacity: 1;
+}
+
+@media (max-width: 991px) {
+    .sidebar {
+        transform: translateX(-280px);
+    }
+
+    .sidebar.active {
+        transform: translateX(0);
+    }
+}

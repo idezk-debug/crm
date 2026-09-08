@@ -1,0 +1,304 @@
+{% extends 'admin_view/base.html' %}
+{% load static %}
+
+{% block title %}{% if settings_scope == "website" %}Website Settings{% else %}Company Settings{% endif %}{% endblock %}
+{% block page_title %}{% if settings_scope == "website" %}Website Settings{% else %}Company Settings{% endif %}{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title mb-0">
+          <i class="fas fa-cog me-2"></i>{% if settings_scope == "website" %}Website Configuration{% else %}Company Configuration{% endif %}
+        </h5>
+      </div>
+      <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+
+          <!-- Site Information -->
+          <div class="settings-section">
+            <h6 class="settings-section-title">
+              <i class="fas fa-info-circle me-2"></i>Site Information
+            </h6>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="site_name" class="form-label">Site Name</label>
+                <input type="text" class="form-control" id="site_name" name="site_name"
+                       value="{{ settings.site_name }}" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="site_logo" class="form-label">Site Logo</label>
+                <input type="file" class="form-control" id="site_logo" name="site_logo" accept="image/*">
+                {% if settings.site_logo %}
+                  <div class="mt-2">
+                    <img src="{{ settings.site_logo.url }}" alt="Current Logo" class="img-thumbnail" style="max-height: 50px;">
+                    <small class="text-muted d-block">Current logo will be replaced if you upload a new one</small>
+                  </div>
+                {% endif %}
+              </div>
+              <div class="col-12 mb-3">
+                <label for="site_description" class="form-label">Site Description</label>
+                <textarea class="form-control" id="site_description" name="site_description"
+                          rows="3">{{ settings.site_description }}</textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Contact Information -->
+          <div class="settings-section">
+            <h6 class="settings-section-title">
+              <i class="fas fa-address-book me-2"></i>Contact Information
+            </h6>
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label for="phone" class="form-label">Phone Number</label>
+                <input type="tel" class="form-control" id="phone" name="phone"
+                       value="{{ settings.phone }}">
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="email" class="form-label">Email Address</label>
+                <input type="email" class="form-control" id="email" name="email"
+                       value="{{ settings.email }}">
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="address" class="form-label">Address</label>
+                <input type="text" class="form-control" id="address" name="address"
+                       value="{{ settings.address }}">
+              </div>
+            </div>
+          </div>
+
+          <!-- Social Links -->
+          <div class="settings-section">
+            <h6 class="settings-section-title">
+              <i class="fas fa-share-alt me-2"></i>Social Media Links
+            </h6>
+            <div class="row">
+              <div class="col-md-6 col-lg-3 mb-3">
+                <label for="facebook_url" class="form-label">
+                  <i class="fab fa-facebook-f me-1"></i>Facebook
+                </label>
+                <input type="url" class="form-control" id="facebook_url" name="facebook_url"
+                       value="{{ settings.facebook_url }}" placeholder="https://facebook.com/yourpage">
+              </div>
+              <div class="col-md-6 col-lg-3 mb-3">
+                <label for="instagram_url" class="form-label">
+                  <i class="fab fa-instagram me-1"></i>Instagram
+                </label>
+                <input type="url" class="form-control" id="instagram_url" name="instagram_url"
+                       value="{{ settings.instagram_url }}" placeholder="https://instagram.com/yourpage">
+              </div>
+              <div class="col-md-6 col-lg-3 mb-3">
+                <label for="twitter_url" class="form-label">
+                  <i class="fab fa-twitter me-1"></i>Twitter
+                </label>
+                <input type="url" class="form-control" id="twitter_url" name="twitter_url"
+                       value="{{ settings.twitter_url }}" placeholder="https://twitter.com/yourpage">
+              </div>
+              <div class="col-md-6 col-lg-3 mb-3">
+                <label for="linkedin_url" class="form-label">
+                  <i class="fab fa-linkedin-in me-1"></i>LinkedIn
+                </label>
+                <input type="url" class="form-control" id="linkedin_url" name="linkedin_url"
+                       value="{{ settings.linkedin_url }}" placeholder="https://linkedin.com/in/yourprofile">
+              </div>
+            </div>
+          </div>
+
+          <!-- Features & Settings -->
+          <div class="settings-section">
+            <h6 class="settings-section-title">
+              <i class="fas fa-toggle-on me-2"></i>Features & Settings
+            </h6>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="maintenance_mode" name="maintenance_mode"
+                         {% if settings.maintenance_mode %}checked{% endif %}>
+                  <label class="form-check-label" for="maintenance_mode">
+                    Maintenance Mode
+                  </label>
+                </div>
+                <small class="form-text text-muted">Enable to show maintenance page to visitors</small>
+              </div>
+              <div class="col-md-6 mb-3">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="allow_client_registration" name="allow_client_registration"
+                         {% if settings.allow_client_registration %}checked{% endif %}>
+                  <label class="form-check-label" for="allow_client_registration">
+                    Allow Client Registration
+                  </label>
+                </div>
+                <small class="form-text text-muted">Allow clients to register themselves</small>
+              </div>
+              <div class="col-md-6 mb-3">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="show_testimonials" name="show_testimonials"
+                         {% if settings.show_testimonials %}checked{% endif %}>
+                  <label class="form-check-label" for="show_testimonials">
+                    Show Testimonials
+                  </label>
+                </div>
+                <small class="form-text text-muted">Display testimonials section on homepage</small>
+              </div>
+              <div class="col-md-6 mb-3">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="show_portfolio" name="show_portfolio"
+                         {% if settings.show_portfolio %}checked{% endif %}>
+                  <label class="form-check-label" for="show_portfolio">
+                    Show Portfolio
+                  </label>
+                </div>
+                <small class="form-text text-muted">Display portfolio section on homepage</small>
+              </div>
+            </div>
+          </div>
+
+          {% if settings_scope == "website" %}
+          <!-- Plan Pricing -->
+          <div class="settings-section">
+            <h6 class="settings-section-title">
+              <i class="fas fa-wallet me-2"></i>Plan Pricing
+            </h6>
+            <div class="row">
+              <div class="col-md-3 mb-3">
+                <label for="free_plan_price" class="form-label">Free Plan Amount</label>
+                <div class="input-group">
+                  <span class="input-group-text">₹</span>
+                  <input type="number" class="form-control" id="free_plan_price" name="free_plan_price" step="0.01" min="0" value="{{ settings.free_plan_price }}">
+                </div>
+              </div>
+              <div class="col-md-3 mb-3">
+                <label for="base_plan_price" class="form-label">Base Plan Amount</label>
+                <div class="input-group">
+                  <span class="input-group-text">₹</span>
+                  <input type="number" class="form-control" id="base_plan_price" name="base_plan_price" step="0.01" min="0" value="{{ settings.base_plan_price }}">
+                </div>
+              </div>
+              <div class="col-md-3 mb-3">
+                <label for="premium_plan_price" class="form-label">Premium Plan Amount</label>
+                <div class="input-group">
+                  <span class="input-group-text">₹</span>
+                  <input type="number" class="form-control" id="premium_plan_price" name="premium_plan_price" step="0.01" min="0" value="{{ settings.premium_plan_price }}">
+                </div>
+              </div>
+              <div class="col-md-3 mb-3">
+                <label for="enterprise_plan_price" class="form-label">Enterprise Plan Amount</label>
+                <div class="input-group">
+                  <span class="input-group-text">₹</span>
+                  <input type="number" class="form-control" id="enterprise_plan_price" name="enterprise_plan_price" step="0.01" min="0" value="{{ settings.enterprise_plan_price }}">
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+
+          <!-- Messages -->
+          <div class="settings-section">
+            <h6 class="settings-section-title">
+              <i class="fas fa-comment me-2"></i>Messages & Content
+            </h6>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="maintenance_message" class="form-label">Maintenance Message</label>
+                <textarea class="form-control" id="maintenance_message" name="maintenance_message"
+                          rows="3">{{ settings.maintenance_message }}</textarea>
+                <small class="form-text text-muted">Message shown when maintenance mode is enabled</small>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="welcome_message" class="form-label">Welcome Message</label>
+                <textarea class="form-control" id="welcome_message" name="welcome_message"
+                          rows="3">{{ settings.welcome_message }}</textarea>
+                <small class="form-text text-muted">Welcome message displayed to users</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="settings-actions">
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-save me-2"></i>Save Settings
+            </button>
+            <button type="reset" class="btn btn-secondary ms-2">
+              <i class="fas fa-undo me-2"></i>Reset Changes
+            </button>
+          </div>
+        </form>
+
+        {% if settings_scope == "company" %}
+        <hr class="my-4">
+        <div class="settings-section">
+          <h6 class="settings-section-title">
+            <i class="fas fa-key me-2"></i>Account Password Management
+          </h6>
+          <p class="text-muted mb-3">Company admin can reset passwords for users inside this company only.</p>
+          <div class="row">
+            <div class="col-lg-6 mb-3">
+              <div class="border rounded p-3 h-100">
+                <h6 class="mb-3">Reset Client Password</h6>
+                <form method="post">
+                  {% csrf_token %}
+                  <input type="hidden" name="form_action" value="reset_client_password">
+                  <div class="mb-2">
+                    <label class="form-label">Select Client</label>
+                    <select class="form-select" name="client_pk" required>
+                      <option value="">Choose client</option>
+                      {% for c in company_clients %}
+                      <option value="{{ c.id }}">{{ c.client_name }} ({{ c.client_id }})</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <div class="mb-2">
+                    <label class="form-label">New Password</label>
+                    <input type="password" class="form-control" name="new_password" minlength="8" required>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Confirm Password</label>
+                    <input type="password" class="form-control" name="confirm_password" minlength="8" required>
+                  </div>
+                  <button type="submit" class="btn btn-outline-primary btn-sm">
+                    <i class="fas fa-key me-1"></i>Update Client Password
+                  </button>
+                </form>
+              </div>
+            </div>
+
+            <div class="col-lg-6 mb-3">
+              <div class="border rounded p-3 h-100">
+                <h6 class="mb-3">Reset Staff Password</h6>
+                <form method="post">
+                  {% csrf_token %}
+                  <input type="hidden" name="form_action" value="reset_staff_password">
+                  <div class="mb-2">
+                    <label class="form-label">Select Staff</label>
+                    <select class="form-select" name="staff_pk" required>
+                      <option value="">Choose staff</option>
+                      {% for s in company_staffs %}
+                      <option value="{{ s.id }}">{{ s.staff_name }} ({{ s.staff_id }})</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <div class="mb-2">
+                    <label class="form-label">New Password</label>
+                    <input type="password" class="form-control" name="new_password" minlength="8" required>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Confirm Password</label>
+                    <input type="password" class="form-control" name="confirm_password" minlength="8" required>
+                  </div>
+                  <button type="submit" class="btn btn-outline-primary btn-sm">
+                    <i class="fas fa-key me-1"></i>Update Staff Password
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

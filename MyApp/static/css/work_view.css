@@ -1,0 +1,402 @@
+    /* ----------------------------------------------------
+    GLOBAL
+---------------------------------------------------- */
+    body {
+        background: linear-gradient(135deg, #e9f0ff 0%, #ffffff 100%);
+        font-family: "Inter", sans-serif;
+        color: #333;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    * {
+        transition: all .25s ease-in-out;
+    }
+
+    /* ----------------------------------------------------
+    CARD / CONTAINER
+---------------------------------------------------- */
+    .card {
+        background: rgba(255, 255, 255, 0.65);
+        backdrop-filter: blur(14px);
+        border-radius: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.08);
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0px 12px 30px rgba(0, 0, 0, 0.12);
+    }
+
+    .card-header {
+        background: transparent;
+        font-size: 1.15rem;
+        font-weight: 700;
+        padding: 16px 22px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.40);
+    }
+
+    /* ----------------------------------------------------
+    HEADERS
+---------------------------------------------------- */
+    .page-header {
+        background: transparent;
+    }
+
+    .page-header h3 {
+        font-size: 1.7rem;
+        font-weight: 700;
+        color: #1d3557;
+    }
+
+    /* ----------------------------------------------------
+    BUTTONS — Modern Neon Style
+---------------------------------------------------- */
+    .btn {
+        border-radius: 10px !important;
+        padding: 9px 16px;
+        font-weight: 600;
+        letter-spacing: .3px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #4f93ff, #0066ff) !important;
+        border: none;
+        box-shadow: 0px 5px 18px rgba(0, 102, 255, 0.35);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0px 8px 22px rgba(0, 102, 255, 0.50);
+    }
+
+    .btn-outline-secondary:hover {
+        background: #505050;
+        color: white;
+    }
+
+    .btn-outline-primary:hover {
+        background: #0d6efd;
+        color: white;
+    }
+
+    .btn-outline-info:hover {
+        background: #0dcaf0;
+        color: white;
+    }
+
+    /* ----------------------------------------------------
+    TABLE
+---------------------------------------------------- */
+    .table-responsive {
+        overflow-x: visible !important;
+    }
+
+    .table {
+        width: 100%;
+        table-layout: auto;
+        border-collapse: separate;
+        border-spacing: 0 10px;
+    }
+
+    .table thead {
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(10px);
+    }
+
+    .table thead th {
+        font-weight: 700;
+        color: #1d3557;
+        text-transform: uppercase;
+        font-size: 13px;
+        padding: 12px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .table tbody tr {
+        background: #ffffff;
+        box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.08);
+        border-radius: 10px;
+    }
+
+    .table tbody tr:hover {
+        background: #f7faff;
+        transform: scale(1.01);
+    }
+
+    .table td {
+        padding: 16px;
+        vertical-align: middle;
+    }
+
+    .table .btn i {
+        font-size: 14px;
+    }
+
+    /* No horizontal scroll */
+    .card-body {
+        overflow-x: hidden !important;
+    }
+
+    /* ----------------------------------------------------
+    BADGES
+---------------------------------------------------- */
+    .badge {
+        font-size: 0.78rem;
+        padding: 7px 11px;
+        border-radius: 8px;
+    }
+
+    /* ----------------------------------------------------
+    FORMS
+---------------------------------------------------- */
+    .form-control,
+    .form-select {
+        background: #f7f9fc;
+        border: 1px solid #d6ddeb;
+        border-radius: 10px;
+        padding: 11px 12px;
+        transition: .25s ease;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #4f80ff;
+        box-shadow: 0 0 0 3px rgba(79, 128, 255, 0.25);
+    }
+
+    /* ----------------------------------------------------
+    MODALS — Glassmorphism
+---------------------------------------------------- */
+    .modal-content {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(12px);
+        border-radius: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.45);
+    }
+
+    .modal-header {
+        border-bottom: none;
+    }
+
+    .modal-title {
+        font-weight: 700;
+        font-size: 1.25rem;
+    }
+
+    /* ----------------------------------------------------
+    LOADER
+---------------------------------------------------- */
+    .spinner-border {
+        width: 2.4rem;
+        height: 2.4rem;
+    }
+
+    /* ----------------------------------------------------
+    NOTIFICATIONS
+---------------------------------------------------- */
+    .notification {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(12px);
+        padding: 15px 22px;
+        border-radius: 14px;
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.12);
+        font-size: 1rem;
+        z-index: 99999;
+    }
+
+    /* ----------------------------------------------------
+    RESPONSIVE FIX
+---------------------------------------------------- */
+    @media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            text-align: center;
+            gap: 12px;
+        }
+
+        .table td,
+        .table th {
+            font-size: 0.82rem;
+        }
+    }
+
+    /* Add some spacing for the new search bar */
+    .search-controls {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    /* ----------------------------------------------------
+    FORM INPUT — Modern Floating Label Style
+---------------------------------------------------- */
+    .form-group {
+        position: relative;
+        margin-bottom: 20px;
+    }
+
+    .floating-input {
+        width: 100%;
+        padding: 14px 14px;
+        background: #f7f9fc;
+        border: 1px solid #d7ddee;
+        border-radius: 12px;
+        outline: none;
+        font-size: 1rem;
+        transition: 0.3s ease;
+    }
+
+    .floating-input:focus {
+        border-color: #4f80ff;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(79, 128, 255, 0.15);
+    }
+
+    .floating-label {
+        position: absolute;
+        top: 13px;
+        left: 16px;
+        font-size: 0.95rem;
+        color: #6f7d97;
+        pointer-events: none;
+        transition: 0.25s ease;
+    }
+
+    .floating-input:focus+.floating-label,
+    .floating-input:not(:placeholder-shown)+.floating-label {
+        top: -8px;
+        left: 12px;
+        background: #fff;
+        padding: 0 6px;
+        color: #4f80ff;
+        font-size: 0.78rem;
+    }
+
+    /* Textarea */
+    textarea.floating-input {
+        min-height: 110px;
+        resize: vertical;
+    }
+
+    /* Dropdown Select */
+    .select-wrapper {
+        position: relative;
+    }
+
+    .select-wrapper select {
+        appearance: none;
+        background-image: url("data:image/svg+xml;utf8,<svg fill='gray' height='16' viewBox='0 0 20 20' width='16' xmlns='http://www.w3.org/2000/svg'><path d='M5.516 7.548l4.484 4.482 4.484-4.482L16 8.548l-6 6-6-6z'/></svg>");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
+        padding-right: 40px;
+    }
+
+    /* Select focus */
+    .select-wrapper select:focus {
+        border-color: #4f80ff;
+        box-shadow: 0 0 0 4px rgba(79, 128, 255, 0.15);
+    }
+
+    .work-description:hover {
+        text-decoration: underline;
+    }
+
+    /* Filter Icon Button */
+    .status-filter-btn {
+        background: rgba(255, 255, 255, 0.75);
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        border-radius: 10px;
+        padding: 6px 10px;
+        cursor: pointer;
+        transition: all 0.25s ease;
+    }
+
+    .status-filter-btn i {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+
+    .status-filter-btn:hover {
+        background: #fff;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+        transform: translateY(-1px);
+    }
+
+    .status-filter-btn:hover i {
+        color: #0d6efd;
+    }
+
+    /* "More ▼" link style */
+    .status-more {
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: #6c757d;
+        text-decoration: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        transition: color 0.2s ease;
+    }
+
+    /* .status-more:hover {
+    color: #ffffff;
+} */
+
+    /* Caret animation */
+    .status-more i {
+        font-size: 0.7rem;
+        transition: transform 0.2s ease;
+    }
+
+    .dropdown.show .status-more i {
+        transform: rotate(180deg);
+    }
+
+    /* Dropdown menu (compact & dark-friendly) */
+    .status-dropdown-menu {
+        min-width: 140px;
+        font-size: 0.82rem;
+        border-radius: 10px;
+        border: none;
+        padding: 6px;
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.25);
+    }
+
+    .status-dropdown-menu .dropdown-item:hover {
+        cursor: pointer;
+    }
+
+    /* Dropdown items */
+    .status-dropdown-menu .dropdown-item {
+        border-radius: 8px;
+        padding: 7px 10px;
+    }
+
+    .status-dropdown-menu .dropdown-item.active {
+        background: #0d6efd;
+        color: #fff;
+    }
+
+    th .status-more {
+        margin-left: 2px;
+        line-height: 1;
+    }
+
+    /* Responsive Fix */
+    @media (max-width: 576px) {
+        .floating-input {
+            font-size: 0.92rem;
+            padding: 12px;
+        }
+
+        .floating-label {
+            font-size: 0.85rem;
+        }
+    }

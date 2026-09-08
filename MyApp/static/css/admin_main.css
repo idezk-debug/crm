@@ -1,0 +1,281 @@
+    /* ----------------------------------------------------
+   GLOBAL
+---------------------------------------------------- */
+    body {
+        background: linear-gradient(135deg, #dceaff 0%, #ffffff 100%);
+        font-family: "Inter", sans-serif;
+        color: #162447;
+    }
+
+    * {
+        transition: all .25s ease-in-out;
+    }
+
+    .page-content {
+        padding: 30px 20px;
+    }
+
+    /* ----------------------------------------------------
+   HEADINGS & PAGE TITLE
+---------------------------------------------------- */
+    .page-title {
+        font-size: 2rem;
+        color: #0a3d62;
+        font-weight: 800;
+        letter-spacing: .5px;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.08);
+    }
+
+    /* ----------------------------------------------------
+   CARD
+---------------------------------------------------- */
+    .card {
+        background: rgba(255, 255, 255, 0.70);
+        backdrop-filter: blur(18px);
+        border-radius: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.10);
+        overflow: hidden;
+    }
+
+    .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 18px 38px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-header {
+        padding: 18px 24px;
+        font-size: 1.25rem;
+        font-weight: 700;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.45);
+    }
+
+    /* ----------------------------------------------------
+   BUTTONS
+---------------------------------------------------- */
+    .btn {
+        border-radius: 12px !important;
+        padding: 10px 18px;
+        font-weight: 600;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #007bff, #0046c7);
+        border: none;
+        box-shadow: 0 4px 14px rgba(0, 102, 255, 0.4);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 102, 255, 0.55);
+    }
+
+    /* ----------------------------------------------------
+   TABLE
+---------------------------------------------------- */
+    .table {
+        border-spacing: 0 12px;
+    }
+
+    .table tbody tr {
+        background: #ffffff;
+        border-radius: 14px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+        transform: translateY(0);
+    }
+
+    .table tbody tr:hover {
+        background-color: #eef5ff;
+        transform: translateY(-3px);
+    }
+
+    .table td,
+    .table th {
+        padding: 18px !important;
+    }
+
+    .table thead {
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(10px);
+    }
+
+    /* ----------------------------------------------------
+   FLOATING INPUT
+---------------------------------------------------- */
+    .form-group {
+        position: relative;
+        margin-bottom: 22px;
+    }
+
+    .floating-input {
+        width: 100%;
+        padding: 15px 14px;
+        background: #f2f6ff;
+        border: 1px solid #ccd9ff;
+        border-radius: 12px;
+    }
+
+    .floating-input:focus {
+        border-color: #4f80ff;
+        background: #ffffff;
+        box-shadow: 0 0 0 4px rgba(79, 128, 255, 0.25);
+    }
+
+    .floating-label {
+        position: absolute;
+        top: 12px;
+        left: 16px;
+        transition: 0.25s ease;
+        color: #6f7d97;
+    }
+
+    .floating-input:focus+.floating-label,
+    .floating-input:not(:placeholder-shown)+.floating-label {
+        top: -9px;
+        font-size: .78rem;
+        background: #ffffff;
+        padding: 0 6px;
+        color: #0046c7;
+    }
+
+    /* ----------------------------------------------------
+   SEARCH INPUT
+---------------------------------------------------- */
+    #clientSearch {
+        border-radius: 12px;
+        transition: .3s ease;
+    }
+
+    #clientSearch:focus {
+        box-shadow: 0 0 10px rgba(79, 128, 255, .4);
+    }
+
+    /* ----------------------------------------------------
+   RESPONSIVE
+---------------------------------------------------- */
+    @media (max-width: 992px) {
+        .page-title {
+            font-size: 1.7rem;
+            text-align: center;
+        }
+
+        .d-flex.justify-content-between {
+            flex-direction: column;
+            gap: 14px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .table {
+            font-size: .82rem;
+        }
+
+        .btn-primary {
+            width: 100%;
+            font-size: 1rem;
+        }
+
+        .input-group {
+            width: 100% !important;
+            margin-top: 10px;
+        }
+    }
+
+    /* ----------------------------------------------------
+   TOAST NOTIFICATIONS
+---------------------------------------------------- */
+    .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        pointer-events: none;
+    }
+
+    .toast {
+        background: #ffffff;
+        border-radius: 14px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+        padding: 18px 24px;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        min-width: 320px;
+        max-width: 400px;
+        Animation: slideInRight 0.3s ease-out;
+        pointer-events: auto;
+        border-left: 4px solid #28a745;
+    }
+
+    .toast.error {
+        border-left-color: #dc3545;
+    }
+
+    .toast.warning {
+        border-left-color: #ffc107;
+    }
+
+    .toast-icon {
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    .toast.success .toast-icon {
+        color: #28a745;
+    }
+
+    .toast.error .toast-icon {
+        color: #dc3545;
+    }
+
+    .toast.warning .toast-icon {
+        color: #ffc107;
+    }
+
+    .toast-content {
+        flex: 1;
+        font-weight: 500;
+        color: #162447;
+    }
+
+    .toast-close {
+        background: none;
+        border: none;
+        color: #999;
+        cursor: pointer;
+        font-size: 1.2rem;
+        padding: 0;
+        flex-shrink: 0;
+        transition: color 0.2s ease;
+    }
+
+    .toast-close:hover {
+        color: #333;
+    }
+
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(400px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes slideOutRight {
+        from {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        to {
+            opacity: 0;
+            transform: translateX(400px);
+        }
+    }
+
+    .toast.hiding {
+        animation: slideOutRight 0.3s ease-out forwards;
+    }

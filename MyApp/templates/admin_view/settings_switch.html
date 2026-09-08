@@ -1,0 +1,58 @@
+{% extends 'admin_view/base.html' %}
+{% load static %}
+
+{% block title %}Settings Switch{% endblock %}
+{% block page_title %}Settings Switch{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-xl-8 col-lg-10">
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-4 p-md-5">
+        <div class="text-center mb-4">
+          <h4 class="fw-bold mb-2">Switch Settings Dashboard</h4>
+          <p class="text-muted mb-0">Use the switch below to open a separate settings page.</p>
+        </div>
+
+        <div class="d-flex justify-content-center mb-4">
+          <div class="btn-group shadow-sm" role="group" aria-label="Settings switch">
+            <a href="{% url 'admin_settings' %}" class="btn btn-primary px-4 py-2">
+              <i class="fas fa-globe me-2"></i>Website Settings
+            </a>
+            {% if has_owned_company %}
+            <a href="{% url 'company_settings' %}" class="btn btn-outline-primary px-4 py-2">
+              <i class="fas fa-building me-2"></i>My Company Settings
+            </a>
+            {% else %}
+            <button type="button" class="btn btn-outline-secondary px-4 py-2" disabled>
+              <i class="fas fa-building me-2"></i>My Company Settings
+            </button>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="p-3 border rounded-3 h-100">
+              <h6 class="fw-bold mb-2">Website Settings</h6>
+              <p class="text-muted mb-3">Global platform controls, registration and public website content.</p>
+              <a href="{% url 'admin_settings' %}" class="btn btn-sm btn-primary">Open Website Settings</a>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="p-3 border rounded-3 h-100">
+              <h6 class="fw-bold mb-2">My Company Settings</h6>
+              <p class="text-muted mb-3">Branding and contact details visible inside your own company dashboard.</p>
+              {% if has_owned_company %}
+              <a href="{% url 'company_settings' %}" class="btn btn-sm btn-outline-primary">Open Company Settings</a>
+              {% else %}
+              <button type="button" class="btn btn-sm btn-outline-secondary" disabled>No Company Linked</button>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

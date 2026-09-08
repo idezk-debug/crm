@@ -1,0 +1,207 @@
+{% extends 'admin_view/base.html' %}
+{% load static %}
+
+{% block title %}{{ dashboard_title|default:"Company Dashboard" }}{% endblock %}
+{% block page_title %}{{ dashboard_title|default:"Company Dashboard" }}{% endblock %}
+
+{% block content %}
+<style>
+  .company-modern .hero {
+    border-radius: 18px;
+    padding: 24px;
+    background: linear-gradient(125deg, #0b132b 0%, #1c2541 45%, #2f855a 100%);
+    color: #fff;
+    box-shadow: 0 18px 35px rgba(11, 19, 43, 0.24);
+  }
+  .company-modern .hero-sub { color: rgba(255,255,255,.88); margin-bottom: 0; }
+  .company-modern .hero-chip {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 12px; border-radius: 999px; font-size: 12px; font-weight: 700;
+    border: 1px solid rgba(255,255,255,.3); background: rgba(255,255,255,.12);
+  }
+  .company-modern .stats-card { border: 0; border-radius: 16px; box-shadow: 0 10px 20px rgba(2, 6, 23, 0.08); }
+  .company-modern .card { border-radius: 16px; border: 1px solid #e5e7eb; box-shadow: 0 8px 16px rgba(2, 6, 23, 0.06); }
+  .company-modern .card-header { background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%); border-bottom: 1px solid #e5e7eb; }
+  .company-modern .quick-action-card { border-radius: 14px; border: 1px solid #e5e7eb; background: #fff; box-shadow: 0 8px 16px rgba(2, 6, 23, 0.05); }
+</style>
+
+<div class="company-modern">
+  <div class="row mb-4">
+    <div class="col-12">
+      <section class="hero d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+          <h3 class="fw-bold mb-1" style="color: white;">{{ dashboard_title|default:"Company Dashboard" }}</h3>
+          <p class="hero-sub">Manage clients, team, and delivery status with a clear operational view.</p>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+          {% if managing_company %}
+          <a href="{% url 'exit_company_admin' %}" class="hero-chip text-decoration-none text-white"><i class="fas fa-globe"></i> Return to Platform</a>
+          {% endif %}
+          <span class="hero-chip"><i class="fas fa-users"></i> {{ total_clients }} Clients</span>
+          <span class="hero-chip"><i class="fas fa-tasks"></i> {{ total_works }} Works</span>
+          <span class="hero-chip"><i class="fas fa-check-circle"></i> {{ completion_rate }}% Complete</span>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-3">
+      <div class="stats-card">
+        <div class="stats-card-icon"><i class="fas fa-users text-primary"></i></div>
+        <div class="stats-card-content">
+          <h3 class="stats-number">{{ total_clients }}</h3>
+          <p class="stats-label">Total Clients</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-3">
+      <div class="stats-card">
+        <div class="stats-card-icon"><i class="fas fa-hourglass-half text-secondary"></i></div>
+        <div class="stats-card-content">
+          <h3 class="stats-number">{{ pending_count }}</h3>
+          <p class="stats-label">Pending</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-3">
+      <div class="stats-card">
+        <div class="stats-card-icon"><i class="fas fa-spinner text-warning"></i></div>
+        <div class="stats-card-content">
+          <h3 class="stats-number">{{ ongoing_count }}</h3>
+          <p class="stats-label">Ongoing</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-3">
+      <div class="stats-card">
+        <div class="stats-card-icon"><i class="fas fa-check-circle text-success"></i></div>
+        <div class="stats-card-content">
+          <h3 class="stats-number">{{ completed_count }}</h3>
+          <p class="stats-label">Completed</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col-xl-8 col-lg-7 mb-4">
+      <div class="card">
+        <div class="card-header"><h5 class="card-title mb-0"><i class="fas fa-chart-line me-2"></i>Work Status Trend</h5></div>
+        <div class="card-body"><canvas id="workStatusChart" height="300"></canvas></div>
+      </div>
+    </div>
+    <div class="col-xl-4 col-lg-5 mb-4">
+      <div class="card">
+        <div class="card-header"><h5 class="card-title mb-0"><i class="fas fa-chart-pie me-2"></i>Distribution</h5></div>
+        <div class="card-body"><canvas id="workDistributionChart" height="300"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xl-6 mb-4">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="card-title mb-0"><i class="fas fa-clock me-2"></i>Recent Works</h5>
+          <a href="{% url 'admin_view' %}" class="btn btn-sm btn-outline-primary">View All</a>
+        </div>
+        <div class="card-body">
+          {% if recent_works %}
+          <div class="recent-activity-list">
+            {% for work in recent_works %}
+            <div class="recent-activity-item">
+              <div class="activity-icon">
+                {% if work.status == 'Completed' %}<i class="fas fa-check-circle text-success"></i>
+                {% elif work.status == 'Ongoing' %}<i class="fas fa-play-circle text-warning"></i>
+                {% else %}<i class="fas fa-clock text-secondary"></i>{% endif %}
+              </div>
+              <div class="activity-content">
+                <h6 class="activity-title">{{ work.title }}</h6>
+                <p class="activity-meta">{{ work.client.client_name }} &bull; {{ work.created_at|date:"M d, Y" }}</p>
+              </div>
+              <div class="activity-status">
+                <span class="badge {% if work.status == 'Completed' %}bg-success{% elif work.status == 'Ongoing' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">{{ work.status }}</span>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          {% else %}
+          <p class="text-muted mb-0">No recent works found.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-6 mb-4">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="card-title mb-0"><i class="fas fa-users me-2"></i>Recent Clients</h5>
+          <a href="{% url 'admin_view' %}" class="btn btn-sm btn-outline-primary">Manage Clients</a>
+        </div>
+        <div class="card-body">
+          {% if recent_clients %}
+          <div class="recent-clients-list">
+            {% for client in recent_clients %}
+            <div class="recent-client-item">
+              <div class="client-avatar"><div class="avatar-circle">{{ client.client_name|slice:":1"|upper }}</div></div>
+              <div class="client-info">
+                <h6 class="client-name">{{ client.client_name }}</h6>
+                <p class="client-meta">ID: {{ client.client_id }} &bull; {{ client.created_at|date:"M d, Y" }}</p>
+              </div>
+              <div class="client-actions">
+                <a href="{% url 'work_view' client.id %}" class="btn btn-sm btn-outline-secondary"><i class="fas fa-eye"></i></a>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          {% else %}
+          <p class="text-muted mb-0">No recent clients found.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const workStatusEl = document.getElementById('workStatusChart');
+  if (workStatusEl) {
+    const workStatusCtx = workStatusEl.getContext('2d');
+    new Chart(workStatusCtx, {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [
+          { label: 'Pending', data: [12, 19, 3, 5, 2, 3], borderColor: '#64748b', backgroundColor: 'rgba(100, 116, 139, 0.1)', tension: 0.4 },
+          { label: 'Ongoing', data: [2, 3, 20, 5, 1, 4], borderColor: '#f59e0b', backgroundColor: 'rgba(245, 158, 11, 0.1)', tension: 0.4 },
+          { label: 'Completed', data: [3, 10, 13, 15, 22, 30], borderColor: '#16a34a', backgroundColor: 'rgba(22, 163, 74, 0.1)', tension: 0.4 }
+        ]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } }, scales: { y: { beginAtZero: true } } }
+    });
+  }
+
+  const workDistributionEl = document.getElementById('workDistributionChart');
+  if (workDistributionEl) {
+    const workDistributionCtx = workDistributionEl.getContext('2d');
+    new Chart(workDistributionCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Pending', 'Ongoing', 'Completed'],
+        datasets: [{
+          data: [{{ pending_count }}, {{ ongoing_count }}, {{ completed_count }}],
+          backgroundColor: ['#64748b', '#f59e0b', '#16a34a'],
+          borderWidth: 0
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+    });
+  }
+});
+</script>
+{% endblock %}

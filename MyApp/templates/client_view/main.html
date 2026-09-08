@@ -1,0 +1,220 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Dashboard</title>
+    <!-- <link rel="icon" href="{% static 'images/logo.png' %}" type="image/x-icon"> -->
+  
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- AOS Animation Library -->
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/client_main.css' %}">
+</head>
+
+<body data-ui-mode="light"
+      data-role-default-mode="light"
+      data-role-default-variant="sunset">
+    {% include 'partials/messages_toast.html' %}
+    {% include 'client_view/sidebar.html' %}
+
+    <!-- MOBILE HEADER -->
+    <div class="mobile-header">
+        <button class="btn text-white" id="menuToggle"><i class="bi bi-list fs-3"></i></button>
+        <h4 class="ms-2 mb-0">Dashboard</h4>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+
+        <h2 class="fw-bold mb-4" data-aos="fade-right">Welcome, {{ client.client_name }} 👋</h2>
+        <!-- STATS -->
+        <div class="row">
+            <div class="col-md-4 mb-3" data-aos="fade-up" data-aos-delay="100">
+                <div class="stat-card">
+                    <h6>Total Tasks</h6>
+                    <h2 class="fw-bold">{{ total_works }}</h2>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-3" data-aos="fade-up" data-aos-delay="200">
+                <div class="stat-card">
+                    <h6>Ongoing Tasks</h6>
+                    <h2 class="fw-bold">{{ ongoing_works }}</h2>
+                    <!-- <h2 class="fw-bold">{{ total_entries }}</h2> -->
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-3" data-aos="fade-up" data-aos-delay="300">
+                <div class="stat-card">
+                    <h6>Completed Tasks</h6>
+                    <h2 class="fw-bold">{{ completed_works }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- WORK LIST -->
+        <div class="work-card p-4 mt-4" data-aos="zoom-in">
+            <h4 class="fw-bold mb-3">All Tasks</h4>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped text-center align-middle">
+                    <thead>
+                        <tr>
+                            <th>S.No.</th>
+                            <th>Name of Task</th>
+                            <th>Status</th>
+                            <th>Registered</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for work in works %}
+                        <tr data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:'0' }}00">
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ work.title }}</td>
+                            <td>
+                                {% if work.status == "Completed" %}
+                                <span class="badge bg-success">{{ work.status }}</span>
+                                {% elif work.status == "Ongoing" %}
+                                <span class="badge bg-warning text-dark">{{ work.status }}</span>
+                                {% else %}
+                                <span class="badge bg-secondary">{{ work.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ work.created_at|date:"d M Y" }}</td>
+                            <td>
+                                <a href="{% url 'client_work_detail' work.id %}">
+                                    View <i class="bi bi-arrow-right"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5">No works found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- NOTIFICATIONS -->
+        <div class="work-card p-4 mt-4" id="notifications" data-aos="zoom-in">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="fw-bold mb-0">Notifications</h4>
+                {% if notification_count > 0 %}
+                <span class="badge bg-danger">{{ notification_count }} New</span>
+                {% endif %}
+            </div>
+
+            {% if notifications %}
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped align-middle">
+                    <thead>
+                        <tr>
+                            <th>From</th>
+                            <th>Message</th>
+                            <th>Sent</th>
+                            <th>Expires</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for n in notifications %}
+                        <tr>
+                            <td>{{ n.sender.username }}</td>
+                            <td style="white-space: pre-wrap;">{{ n.message }}</td>
+                            <td>{{ n.created_at|date:"d M Y, h:i A" }}</td>
+                            <td>{{ n.expires_at|date:"d M Y, h:i A" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted mb-0">No active notifications.</p>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <!-- Floating Contact Buttons -->
+    <div class="floating-buttons">
+
+        <div class="contact-container">
+            <div class="contact-text">Contact Us</div>
+        </div>
+
+        <a href="tel:{{ current_company_settings.phone|default:current_company.business_phone|default:'' }}" class="float-whatsapp" data-tooltip="Call Company">
+            <i class="bi bi-whatsapp"></i>
+        </a>
+
+        <a href="mailto:{{ current_company_settings.email|default:current_company.business_email|default:'' }}" class="float-email" data-tooltip="Email Company">
+            <i class="bi bi-envelope-fill"></i>
+        </a>
+    </div>
+
+
+
+    <!-- JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+
+    <script>
+        function getResolvedMode(mode) {
+            if (mode !== "system") {
+                return mode;
+            }
+            return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+
+        function applyClientTheme(mode, variant) {
+            const resolvedMode = getResolvedMode(mode);
+            document.body.dataset.uiMode = resolvedMode;
+            document.body.dataset.themeVariant = variant;
+            document.documentElement.setAttribute("data-bs-theme", resolvedMode);
+        }
+
+        const themeModeSelect = document.getElementById("clientThemeModeSelect");
+        const themeVariantSelect = document.getElementById("clientThemeVariantSelect");
+        if (themeModeSelect && themeVariantSelect) {
+            const storedMode = localStorage.getItem("crm_theme_mode");
+            const storedVariant = localStorage.getItem("crm_theme_variant");
+            const initialMode = storedMode || document.body.dataset.roleDefaultMode || "light";
+            const initialVariant = storedVariant || document.body.dataset.roleDefaultVariant || "sunset";
+            themeModeSelect.value = initialMode;
+            themeVariantSelect.value = initialVariant;
+            applyClientTheme(initialMode, initialVariant);
+
+            const persistTheme = () => {
+                const mode = themeModeSelect.value || "light";
+                const variant = themeVariantSelect.value || "default";
+                localStorage.setItem("crm_theme_mode", mode);
+                localStorage.setItem("crm_theme_variant", variant);
+                applyClientTheme(mode, variant);
+            };
+
+            themeModeSelect.addEventListener("change", persistTheme);
+            themeVariantSelect.addEventListener("change", persistTheme);
+
+            const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+            mediaQuery.addEventListener("change", () => {
+                if (themeModeSelect.value === "system") {
+                    applyClientTheme("system", themeVariantSelect.value || "default");
+                }
+            });
+        }
+    </script>
+    <script src="{% static 'js/client_main.js' %}"></script>
+
+</body>
+
+</html>

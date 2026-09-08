@@ -1,0 +1,202 @@
+{% extends 'admin_view/base.html' %}
+{% load static %}
+
+{% block title %}Platform Dashboard{% endblock %}
+{% block page_title %}Platform Dashboard{% endblock %}
+
+{% block content %}
+<style>
+  .platform-modern .hero {
+    border-radius: 18px;
+    padding: 24px;
+    background: linear-gradient(125deg, #111827 0%, #1d4ed8 45%, #0ea5e9 100%);
+    color: #fff;
+    box-shadow: 0 18px 35px rgba(17, 24, 39, 0.24);
+  }
+  .platform-modern .hero-sub { color: rgba(255,255,255,.88); margin-bottom: 0; }
+  .platform-modern .hero-chip {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 12px; border-radius: 999px; font-size: 12px; font-weight: 700;
+    border: 1px solid rgba(255,255,255,.28); background: rgba(255,255,255,.12);
+  }
+</style>
+
+<div class="platform-modern">
+  <div class="row mb-4">
+    <div class="col-12">
+      <section class="hero d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+          <h3 class="fw-bold mb-1" style="color: white;">Platform Dashboard</h3>
+          <p class="hero-sub">Global view of companies, subscriptions, and platform-level settings.</p>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+          {% if is_company_admin %}
+          <a href="{% url 'company_dashboard' %}" class="hero-chip text-white text-decoration-none"><i class="fas fa-building"></i> Company Dashboard</a>
+          {% endif %}
+          <a href="{% url 'admin_subscriptions' %}" class="hero-chip text-white text-decoration-none"><i class="fas fa-credit-card"></i> Subcriptions</a>
+          <a href="{% url 'admin_settings' %}" class="hero-chip text-white text-decoration-none"><i class="fas fa-cog"></i> Website Settings</a>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-3">
+      <div class="stats-card"><div class="stats-card-content"><h3 class="stats-number">{{ total_companies }}</h3><p class="stats-label">Total Companies</p></div></div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-3">
+      <div class="stats-card"><div class="stats-card-content"><h3 class="stats-number">{{ active_count }}</h3><p class="stats-label">Active Access</p></div></div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-3">
+      <div class="stats-card"><div class="stats-card-content"><h3 class="stats-number">{{ trial_count }}</h3><p class="stats-label">In Trial</p></div></div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-3">
+      <div class="stats-card"><div class="stats-card-content"><h3 class="stats-number">{{ expired_count }}</h3><p class="stats-label">Expired Access</p></div></div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xl-12 mb-4">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="card-title mb-0"><i class="fas fa-building me-2"></i>Recent Companies</h5>
+          <a href="{% url 'admin_subscriptions' %}" class="btn btn-sm btn-outline-primary">View All Plans</a>
+        </div>
+        <div class="card-body">
+          {% if recent_companies %}
+          <div class="table-responsive">
+            <table class="table table-bordered align-middle">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Code</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for c in recent_companies %}
+                <tr>
+                  <td>{{ c.name }}</td>
+                  <td>{{ c.code }}</td>
+                  <td>
+                    <a href="{% url 'enter_company_admin' c.id %}" class="btn btn-sm btn-primary">Manage Company</a>
+                    {% if c.has_active_access %}
+                    <span class="badge bg-success">Active</span>
+                    {% else %}
+                    <span class="badge bg-danger">Inactive</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <form method="POST" action="{% url 'toggle_company_access' c.id %}" style="display:inline;" onsubmit="return confirm('Are you sure you want to {% if c.is_active %}REVOKE{% else %}ACTIVATE{% endif %} access for {{ c.name }}?');">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-sm {% if c.is_active %}btn-warning{% else %}btn-success{% endif %}">
+                        {% if c.is_active %}⚠ Revoke Access{% else %}✓ Activate Access{% endif %}
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            </div>
+          {% else %}
+          <p class="text-muted mb-0">No companies found.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    {% comment %} <div class="col-xl-5 mb-4">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="card-title mb-0"><i class="fas fa-money-check-alt me-2"></i>Pending Renewals</h5>
+          <a href="{% url 'admin_subscriptions' %}" class="btn btn-sm btn-outline-primary">Review</a>
+        </div>
+        <div class="card-body">
+          {% if pending_payments %}
+          <ul class="list-group">
+            {% for p in pending_payments %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span>{{ p.company.name }}</span>
+              <span class="badge bg-warning text-dark">{{ p.currency }} {{ p.amount }}</span>
+            </li>
+            {% endfor %}
+          </ul>
+          {% else %}
+          <p class="text-muted mb-0">No pending renewals.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div> {% endcomment %}
+  </div>
+
+  {% comment %} <div class="row mb-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="card-title mb-0"><i class="fas fa-exclamation-circle me-2"></i>Pending Company Requests</h5>
+          <span class="text-muted small">Requires platform admin approval</span>
+        </div>
+        <div class="card-body">
+          {% if pending_deletion_requests %}
+          <div class="table-responsive">
+            <table class="table table-bordered align-middle">
+              <thead>
+                <tr>
+                  <th>Company</th>
+                  <th>Type</th>
+                  <th>Requested By</th>
+                  <th>Reason</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for req in pending_deletion_requests %}
+                <tr>
+                  <td>{{ req.company.name }}</td>
+                  <td>{{ req.get_target_type_display }}</td>
+                  <td>{{ req.requested_by.username }}</td>
+                  <td>{{ req.reason|truncatechars:80 }}</td>
+                  <td>
+                    <div class="d-flex gap-2">
+                      <button class="btn btn-sm btn-success deletion-action" data-id="{{ req.id }}" data-action="approve">Approve</button>
+                      <button class="btn btn-sm btn-danger deletion-action" data-id="{{ req.id }}" data-action="reject">Reject</button>
+                    </div>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <p class="text-muted mb-0">No pending company requests.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div> {% endcomment %}
+</div>
+
+<script>
+document.querySelectorAll(".deletion-action").forEach((btn) => {
+    btn.addEventListener("click", async function () {
+        const requestId = this.dataset.id;
+        const action = this.dataset.action;
+        const csrfToken = "{{ csrf_token }}";
+        const formData = new FormData();
+        formData.append("action", action);
+        const res = await fetch(`/deletion-request/${requestId}/`, {
+            method: "POST",
+            headers: { "X-CSRFToken": csrfToken },
+            body: formData
+        });
+        const data = await res.json();
+        alert(data.message || "Done");
+        if (data.status === "success") {
+            window.location.reload();
+        }
+    });
+});
+</script>
+{% endblock %}

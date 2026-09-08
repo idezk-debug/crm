@@ -1,0 +1,185 @@
+{% extends 'admin_view/base.html' %}
+{% load static %}
+
+{% block title %}Upload Files{% endblock %}
+{% block page_title %}Upload Files{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/_upload_images.css' %}" />
+
+<div class="upload-page">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <div>
+      <h4 class="mb-1 fw-bold">Work: {{ work.title }}</h4>
+      <p class="text-muted mb-0">Upload and manage files for this work.</p>
+    </div>
+
+    <a href="{% url 'work_view' work.client.id %}" class="btn btn-outline-secondary btn-sm">
+      <i class="fa fa-arrow-left me-1"></i> Back to Work List
+    </a>
+  </div>
+
+  <div class="upload-card">
+    <p class="subtext mb-3">Allowed: Images, PDF, Word, Excel, CSV, TXT (max 200MB each). Files auto-delete after 7 days.</p>
+
+    <form id="fileUploadForm">
+      {% csrf_token %}
+
+      <div class="upload-area" id="uploadArea">
+        <p class="mb-2">Drag and drop files here</p>
+
+        <label class="upload-btn">
+          Browse Files
+          <input
+            type="file"
+            id="fileInput"
+            multiple
+            accept="image/*,image/tiff,.jpg,.jpeg,.png,.gif,.bmp,.webp,.tif,.tiff,.pdf,.doc,.docx,.xls,.xlsx,.csv,.txt"
+          />
+        </label>
+
+        <div class="error" id="error"></div>
+        <div class="selected-list" id="selectedList"></div>
+      </div>
+
+      <button class="submit-btn" id="submitBtn" disabled type="submit">Upload Files</button>
+    </form>
+  </div>
+
+  <div class="uploaded-section mt-4">
+    <h5 class="fw-bold mb-3">Uploaded Files</h5>
+    <div id="uploadedImages" class="file-grid">
+      {% include 'admin_view/partials/_image_grid.html' with files=files file_groups=file_groups can_delete_files=can_delete_files %}
+    </div>
+  </div>
+</div>
+
+<script>
+  const uploadArea = document.getElementById("uploadArea");
+  const fileInput = document.getElementById("fileInput");
+  const selectedList = document.getElementById("selectedList");
+  const error = document.getElementById("error");
+  const submitBtn = document.getElementById("submitBtn");
+
+  let filesArray = [];
+  const allowedExt = new Set(["jpg", "jpeg", "png", "gif", "bmp", "webp", "tif", "tiff", "pdf", "doc", "docx", "xls", "xlsx", "csv", "txt"]);
+  const maxSize = 200 * 1024 * 1024;
+
+  function toMB(bytes) {
+    return (bytes / (1024 * 1024)).toFixed(2);
+  }
+
+  function renderSelected() {
+    selectedList.innerHTML = "";
+
+    filesArray.forEach((file, index) => {
+      selectedList.innerHTML += `
+        <div class="selected-item">
+          <span class="name" title="${file.name}">${file.name}</span>
+          <span class="size">${toMB(file.size)} MB</span>
+          <button type="button" class="remove-btn" onclick="removeFile(${index})">Remove</button>
+        </div>
+      `;
+    });
+
+    submitBtn.disabled = filesArray.length === 0;
+    submitBtn.classList.toggle("active", filesArray.length > 0);
+  }
+
+  function removeFile(index) {
+    filesArray.splice(index, 1);
+    renderSelected();
+  }
+
+  function handleFiles(files) {
+    error.textContent = "";
+
+    Array.from(files).forEach((file) => {
+      const ext = file.name.split(".").pop().toLowerCase();
+
+      if (!allowedExt.has(ext)) {
+        error.textContent = `Unsupported file type: ${file.name}`;
+        return;
+      }
+
+      if (file.size > maxSize) {
+        error.textContent = `${file.name} exceeds 200MB.`;
+        return;
+      }
+
+      filesArray.push(file);
+    });
+
+    renderSelected();
+  }
+
+  fileInput.addEventListener("change", function () {
+    handleFiles(this.files);
+  });
+
+  uploadArea.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    uploadArea.classList.add("dragover");
+  });
+
+  uploadArea.addEventListener("dragleave", () => {
+    uploadArea.classList.remove("dragover");
+  });
+
+  uploadArea.addEventListener("drop", (e) => {
+    e.preventDefault();
+    uploadArea.classList.remove("dragover");
+    handleFiles(e.dataTransfer.files);
+  });
+
+  document.getElementById("fileUploadForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const formData = new FormData();
+    filesArray.forEach((file) => formData.append("files", file));
+    formData.append("csrfmiddlewaretoken", document.querySelector("[name=csrfmiddlewaretoken]").value);
+
+    fetch("/work/{{ work.id }}/upload-images/", {
+      method: "POST",
+      body: formData,
+      headers: { "X-Requested-With": "XMLHttpRequest" },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status === "success") {
+          document.getElementById("uploadedImages").innerHTML = data.html;
+          filesArray = [];
+          renderSelected();
+          error.textContent = "";
+        } else {
+          error.textContent = data.message || "Upload failed";
+        }
+      })
+      .catch(() => {
+        error.textContent = "Upload error";
+      });
+  });
+
+  function deleteFile(fileId) {
+    if (!confirm("Delete this file?")) return;
+
+    fetch(`/delete-image/${fileId}/`, {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+        "X-Requested-With": "XMLHttpRequest",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status === "success") {
+          const item = document.getElementById(`file-${fileId}`);
+          if (item) item.remove();
+        } else {
+          alert(data.message || "Delete failed");
+        }
+      })
+      .catch(() => alert("Delete error"));
+  }
+</script>
+{% endblock %}

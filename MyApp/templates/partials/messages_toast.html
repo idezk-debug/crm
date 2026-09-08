@@ -1,0 +1,117 @@
+
+{% if messages %}
+<div id="appToastStack" class="app-toast-stack" aria-live="polite" aria-atomic="true">
+  {% for message in messages %}
+    <div class="app-toast {% if 'error' in message.tags %}toast-danger{% elif 'warning' in message.tags %}toast-warning{% elif 'success' in message.tags %}toast-success{% else %}toast-info{% endif %}" data-timeout="4500">
+      <div class="app-toast-body">{{ message }}</div>
+      <button type="button" class="app-toast-close" aria-label="Close">&times;</button>
+    </div>
+  {% endfor %}
+</div>
+
+<style>
+  .app-toast-stack {
+    position: fixed;
+    top: 18px;
+    right: 18px;
+    z-index: 5000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: min(92vw, 380px);
+  }
+
+  .app-toast {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    border-radius: 10px;
+    padding: 12px 14px;
+    border: 1px solid transparent;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+    animation: appToastIn .25s ease-out;
+    font-size: .92rem;
+    line-height: 1.35;
+    color: #1b2838;
+    background: #eef4ff;
+  }
+
+  .app-toast.toast-success {
+    background: #e8f7ef;
+    border-color: #98dfb7;
+    color: #0f5132;
+  }
+
+  .app-toast.toast-danger {
+    background: #fdecec;
+    border-color: #f3b3b3;
+    color: #842029;
+  }
+
+  .app-toast.toast-warning {
+    background: #fff8e6;
+    border-color: #ffe08a;
+    color: #664d03;
+  }
+
+  .app-toast.toast-info {
+    background: #e8f4ff;
+    border-color: #9fcbf7;
+    color: #084298;
+  }
+
+  .app-toast-body {
+    flex: 1;
+    word-break: break-word;
+  }
+
+  .app-toast-close {
+    border: 0;
+    background: transparent;
+    color: currentColor;
+    font-size: 1.15rem;
+    line-height: 1;
+    cursor: pointer;
+    opacity: .7;
+    margin-top: -1px;
+  }
+
+  .app-toast-close:hover { opacity: 1; }
+
+  @keyframes appToastIn {
+    from { transform: translateY(-8px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  @media (max-width: 768px) {
+    .app-toast-stack {
+      top: 12px;
+      right: 12px;
+      left: 12px;
+      max-width: none;
+    }
+  }
+</style>
+
+<script>
+  (function() {
+    const stack = document.getElementById('appToastStack');
+    if (!stack) return;
+
+    stack.querySelectorAll('.app-toast').forEach((toast) => {
+      const closeBtn = toast.querySelector('.app-toast-close');
+      const remove = () => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(-6px)';
+        setTimeout(() => toast.remove(), 180);
+      };
+
+      if (closeBtn) closeBtn.addEventListener('click', remove);
+
+      const timeout = parseInt(toast.dataset.timeout || '4500', 10);
+      setTimeout(remove, timeout);
+    });
+  })();
+</script>
+{% endif %}

@@ -1,0 +1,466 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Company</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="{% static 'img/bird-colorful-gradient-design-vector_343694-2506.avif' %}">
+    <style>
+        :root {
+            --brand-deep: #0f172a;
+            --brand-mid: #0f766e;
+            --brand-soft: #22d3ee;
+            --accent: #f97316;
+            --ink: #0b1220;
+            --muted: #5b6472;
+            --panel: rgba(255, 255, 255, 0.88);
+            --line: rgba(15, 23, 42, 0.12);
+            --input-bg: rgba(255, 255, 255, 0.72);
+            --focus: rgba(15, 118, 110, 0.28);
+        }
+
+        body {
+            font-family: "Manrope", sans-serif;
+            min-height: 100vh;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at 8% 15%, rgba(34, 211, 238, 0.28), transparent 38%),
+                radial-gradient(circle at 92% 12%, rgba(249, 115, 22, 0.21), transparent 30%),
+                linear-gradient(145deg, #e9f3ff 0%, #eefcf9 52%, #fff4eb 100%);
+        }
+
+        .register-shell {
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 2.2rem 1rem;
+        }
+
+        .register-grid {
+            display: grid;
+            grid-template-columns: minmax(240px, 0.8fr) minmax(320px, 1.2fr);
+            gap: 1.1rem;
+            align-items: stretch;
+        }
+
+        .intro-card,
+        .form-card {
+            border: 1px solid var(--line);
+            border-radius: 1.2rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+        }
+
+        .intro-card {
+            background: linear-gradient(160deg, #0f172a 0%, #1e293b 46%, #0f766e 100%);
+            color: #f8fafc;
+            padding: 2rem 1.65rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .intro-card::before {
+            content: "";
+            width: 220px;
+            height: 220px;
+            position: absolute;
+            right: -70px;
+            top: -58px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(34, 211, 238, 0.35), transparent 72%);
+        }
+
+        .intro-title {
+            font-family: "Sora", sans-serif;
+            font-size: clamp(1.5rem, 2.1vw, 2rem);
+            line-height: 1.22;
+            margin-bottom: 0.75rem;
+            max-width: 20ch;
+        }
+
+        .intro-copy {
+            color: rgba(226, 232, 240, 0.93);
+            line-height: 1.55;
+            margin-bottom: 1.2rem;
+        }
+
+        .intro-points {
+            padding-left: 0;
+            margin: 0;
+            list-style: none;
+        }
+
+        .intro-points li {
+            margin-bottom: 0.58rem;
+            font-size: 0.95rem;
+        }
+
+        .intro-points li::before {
+            content: "";`r`n            display: inline-block;`r`n            width: 0.34rem;`r`n            height: 0.34rem;`r`n            border-radius: 999px;`r`n            background: #67e8f9;
+            color: #67e8f9;
+            margin-right: 0.5rem;
+        }
+
+        .form-card {
+            background: var(--panel);
+            padding: 1.55rem;
+        }
+
+        .form-headline {
+            font-family: "Sora", sans-serif;
+            margin-bottom: 0.3rem;
+            font-size: 1.5rem;
+        }
+
+        .form-subline {
+            color: var(--muted);
+            margin-bottom: 1.2rem;
+            font-size: 0.94rem;
+        }
+
+        .form-label {
+            font-weight: 700;
+            font-size: 0.84rem;
+            letter-spacing: 0.01em;
+            margin-bottom: 0.32rem;
+        }
+
+        .form-control,
+        .form-select {
+            border: 1px solid var(--line);
+            border-radius: 0.72rem;
+            background: var(--input-bg);
+            min-height: 2.85rem;
+            padding: 0.62rem 0.8rem;
+            font-size: 0.94rem;
+            box-shadow: none;
+        }
+
+        .phone-input-wrap {
+            display: flex;
+            align-items: stretch;
+            width: 100%;
+        }
+
+        .phone-input-wrap .iti {
+            width: 100%;
+        }
+
+        .phone-input-wrap input[type="tel"] {
+            width: 100%;
+        }
+
+        .iti__flag-container {
+            border-right: 1px solid rgba(15, 23, 42, 0.08);
+        }
+
+        .iti__selected-flag {
+            background-color: #ffffff;
+            border-radius: 0.72rem 0 0 0.72rem;
+        }
+
+        .phone-number-field {
+            flex: 1;
+        }
+
+        textarea.form-control {
+            min-height: 6.2rem;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #14b8a6;
+            box-shadow: 0 0 0 0.24rem var(--focus);
+            background: #ffffff;
+        }
+
+        .btn-create {
+            border: 0;
+            border-radius: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            min-height: 3.1rem;
+            background: linear-gradient(125deg, #0f766e 0%, #0ea5e9 55%, #0284c7 100%);
+            box-shadow: 0 14px 28px rgba(14, 116, 144, 0.24);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-create:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 18px 30px rgba(14, 116, 144, 0.28);
+        }
+
+        .signin-link {
+            color: #0f766e;
+            font-weight: 700;
+        }
+
+        .signin-link:hover {
+            color: #0b5f5a;
+        }
+
+        @media (max-width: 991px) {
+            .register-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .intro-card {
+                padding: 1.6rem 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% include 'partials/messages_toast.html' %}
+
+    <div class="register-shell">
+        <div class="register-grid">
+            <section class="intro-card">
+                <h1 class="intro-title">Set up your company workspace in minutes</h1>
+                <p class="intro-copy">Start your 7-day free trial today. Add your business details once and get a clean dashboard ready for your team.</p>
+                <ul class="intro-points">
+                    <li>Fast onboarding with guided details</li>
+                    <li>Secure account setup for company admins</li>
+                    <li>Supports location-based setup with country, state, district</li>
+                </ul>
+            </section>
+
+            <section class="form-card">
+                <h2 class="form-headline">Registration</h2>
+                <p class="form-subline">Please fill all required fields to create your account.</p>
+
+                <form method="post" id="registrationForm">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">First Name<span style="color: red;"> *</span></label>
+                            <input type="text" name="first_name" class="form-control" value="{{ request.POST.first_name|default:'' }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Last Name<span style="color: red;"> *</span></label>
+                            <input type="text" name="last_name" class="form-control" value="{{ request.POST.last_name|default:'' }}" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Email<span style="color: red;"> *</span></label>
+                            <input type="email" name="business_email" class="form-control" value="{{ request.POST.business_email|default:'' }}" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Phone Number<span style="color: red;"> *</span></label>
+                            <div class="phone-input-wrap">
+                                <input
+                                    type="tel"
+                                    name="business_phone"
+                                    id="businessPhone"
+                                    class="form-control phone-number-field"
+                                    value="{{ request.POST.business_phone|default:'' }}"
+                                    placeholder="Enter phone number"
+                                    required
+                                >
+                                <input type="hidden" name="country_code" id="countryCodeInput" value="+91">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Password<span style="color: red;"> *</span></label>
+                            <input type="password" name="password" class="form-control" minlength="8" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Confirm Password<span style="color: red;"> *</span></label>
+                            <input type="password" name="confirm_password" class="form-control" minlength="8" required>
+                        </div>
+
+                        <div class="col-12 mt-2"></div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Company Name<span style="color: red;"> *</span></label>
+                            <input type="text" name="company_name" class="form-control" value="{{ request.POST.company_name|default:'' }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">GST/Udyam No.</label>
+                            <input type="text" name="gst_or_udyam_no" class="form-control" value="{{ request.POST.gst_or_udyam_no|default:'' }}">
+                        </div>
+
+                        <div class="col-md-12">
+                            <label class="form-label">Website URL <span style="color: #64748b; font-weight: 500;">(optional)</span></label>
+                            <input
+                                type="url"
+                                name="website_url"
+                                class="form-control"
+                                value="{{ request.POST.website_url|default:'' }}"
+                                placeholder="https://example.com"
+                            >
+                        </div>
+
+                        <div class="col-md-12">
+                            <label class="form-label">Permanent Address<span style="color: red;"> *</span></label>
+                            <textarea
+                                name="permanent_address"
+                                class="form-control"
+                                rows="3"
+                                required
+                            >{{ request.POST.permanent_address|default:'' }}</textarea>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Country<span style="color: red;"> *</span></label>
+                            <select name="country" id="countrySelect" class="form-select" required>
+                                <option value="">Select Country</option>
+                                {% for country in countries %}
+                                <option value="{{ country.id }}" {% if selected_country == country.id|stringformat:'s' %}selected{% endif %}>{{ country.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">State<span style="color: red;"> *</span></label>
+                            <select name="state" id="stateSelect" class="form-select" required>
+                                <option value="">Select State</option>
+                                {% for state in states %}
+                                <option value="{{ state.id }}" data-country="{{ state.country_id }}" data-name="{{ state.name|escapejs }}" {% if selected_state == state.id|stringformat:'s' %}selected{% endif %}>{{ state.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">District<span style="color: red;"> *</span></label>
+                            <select name="district" id="districtSelect" class="form-select" required>
+                                <option value="">Select District</option>
+                                {% for district in districts %}
+                                <option value="{{ district.id }}" data-country="{{ district.country_id }}" data-state="{{ district.region_id }}" data-name="{{ district.name|escapejs }}" {% if selected_district == district.id|stringformat:'s' %}selected{% endif %}>{{ district.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Pincode<span style="color: red;"> *</span></label>
+                            <input type="text" name="pincode" class="form-control" value="{{ request.POST.pincode|default:'' }}" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-create text-white w-100 mt-4">Create Company Account</button>
+                </form>
+
+                <div class="text-center mt-3">
+                    <a href="{% url 'login' %}" class="text-decoration-none signin-link">Already registered? Login</a>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+    <script>
+        (function () {
+            const country = document.getElementById('countrySelect');
+            const state = document.getElementById('stateSelect');
+            const district = document.getElementById('districtSelect');
+            const businessPhone = document.getElementById('businessPhone');
+            const countryCodeInput = document.getElementById('countryCodeInput');
+
+            const selectedCountry = '{{ selected_country|default:""|escapejs }}';
+            const selectedState = '{{ selected_state|default:""|escapejs }}';
+            const selectedDistrict = '{{ selected_district|default:""|escapejs }}';
+
+            const phoneInput = window.intlTelInput(businessPhone, {
+                initialCountry: 'in',
+                separateDialCode: true,
+                preferredCountries: ['in', 'us', 'uk', 'ae', 'sa', 'sg'],
+                utilsScript: 'https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js'
+            });
+
+            function syncCountryCode() {
+                const data = phoneInput.getSelectedCountryData();
+                const dialCode = data && data.dialCode ? `+${data.dialCode}` : '+91';
+                countryCodeInput.value = dialCode;
+            }
+
+            businessPhone.addEventListener('input', function () {
+                const digits = businessPhone.value.replace(/\D/g, '');
+                businessPhone.value = digits;
+                syncCountryCode();
+            });
+
+            businessPhone.addEventListener('keyup', syncCountryCode);
+            businessPhone.addEventListener('change', syncCountryCode);
+            businessPhone.addEventListener('blur', syncCountryCode);
+
+            const selectedCountryCode = '{{ request.POST.country_code|default:"+91"|escapejs }}';
+            if (selectedCountryCode) {
+                const match = selectedCountryCode.replace('+', '');
+                const countryList = window.intlTelInputGlobals.getCountryData();
+                const matched = countryList.find(item => String(item.dialCode) === match);
+                if (matched) {
+                    phoneInput.setCountry(matched.iso2);
+                    syncCountryCode();
+                }
+            }
+
+            const allStateOptions = Array.from(state.options)
+                .slice(1)
+                .map((opt) => ({
+                    value: opt.value,
+                    country: opt.dataset.country,
+                    name: opt.dataset.name || opt.textContent.trim()
+                }));
+            const allDistrictOptions = Array.from(district.options)
+                .slice(1)
+                .map((opt) => ({
+                    value: opt.value,
+                    country: opt.dataset.country,
+                    state: opt.dataset.state,
+                    name: opt.dataset.name || opt.textContent.trim()
+                }));
+
+            function populateStateOptions(keepValue) {
+                const countryId = country.value;
+                state.innerHTML = '<option value="">Select State</option>';
+                const filtered = allStateOptions.filter((item) => item.country === countryId);
+                filtered.forEach((item) => {
+                    state.insertAdjacentHTML(
+                        'beforeend',
+                        `<option value="${item.value}">${item.name}</option>`
+                    );
+                });
+                state.disabled = !countryId || filtered.length === 0;
+                state.value = keepValue && filtered.some((item) => item.value === keepValue) ? keepValue : '';
+            }
+
+            function populateDistrictOptions(keepValue) {
+                const countryId = country.value;
+                const stateId = state.value;
+                district.innerHTML = '<option value="">Select District</option>';
+                const filtered = allDistrictOptions.filter(
+                    (item) => item.country === countryId && item.state === stateId
+                );
+                filtered.forEach((item) => {
+                    district.insertAdjacentHTML(
+                        'beforeend',
+                        `<option value="${item.value}">${item.name}</option>`
+                    );
+                });
+                district.disabled = !stateId || filtered.length === 0;
+                district.value = keepValue && filtered.some((item) => item.value === keepValue) ? keepValue : '';
+            }
+
+            country.addEventListener('change', function () {
+                populateStateOptions('');
+                populateDistrictOptions('');
+            });
+
+            state.addEventListener('change', function () {
+                populateDistrictOptions('');
+            });
+
+            if (selectedCountry) {
+                country.value = selectedCountry;
+            }
+            populateStateOptions(selectedState);
+            populateDistrictOptions(selectedDistrict);
+            syncCountryCode();
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,124 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Tasks</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/client_main.css' %}">
+</head>
+
+<body data-ui-mode="light"
+      data-role-default-mode="light"
+      data-role-default-variant="sunset">
+    {% include 'partials/messages_toast.html' %}
+    {% include 'client_view/sidebar.html' %}
+
+    <div class="mobile-header">
+        <button class="btn text-white" id="menuToggle"><i class="bi bi-list fs-3"></i></button>
+        <h4 class="ms-2 mb-0">Tasks</h4>
+    </div>
+
+    <div class="main-content">
+        <h2 class="fw-bold mb-4" data-aos="fade-right">All Tasks</h2>
+
+        <div class="work-card p-4" data-aos="zoom-in">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped text-center align-middle">
+                    <thead>
+                        <tr>
+                            <th>S.No.</th>
+                            <th>Name of Task</th>
+                            <th>Status</th>
+                            <th>Registered</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for work in works %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ work.title }}</td>
+                            <td>
+                                {% if work.status == "Completed" %}
+                                <span class="badge bg-success">{{ work.status }}</span>
+                                {% elif work.status == "Ongoing" %}
+                                <span class="badge bg-warning text-dark">{{ work.status }}</span>
+                                {% else %}
+                                <span class="badge bg-secondary">{{ work.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ work.created_at|date:"d M Y" }}</td>
+                            <td>
+                                <a href="{% url 'client_work_detail' work.id %}">
+                                    View <i class="bi bi-arrow-right"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5">No works found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+    <script>
+        function getResolvedMode(mode) {
+            if (mode !== "system") {
+                return mode;
+            }
+            return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+
+        function applyClientTheme(mode, variant) {
+            const resolvedMode = getResolvedMode(mode);
+            document.body.dataset.uiMode = resolvedMode;
+            document.body.dataset.themeVariant = variant;
+            document.documentElement.setAttribute("data-bs-theme", resolvedMode);
+        }
+
+        const themeModeSelect = document.getElementById("clientThemeModeSelect");
+        const themeVariantSelect = document.getElementById("clientThemeVariantSelect");
+        if (themeModeSelect && themeVariantSelect) {
+            const storedMode = localStorage.getItem("crm_theme_mode");
+            const storedVariant = localStorage.getItem("crm_theme_variant");
+            const initialMode = storedMode || document.body.dataset.roleDefaultMode || "light";
+            const initialVariant = storedVariant || document.body.dataset.roleDefaultVariant || "sunset";
+            themeModeSelect.value = initialMode;
+            themeVariantSelect.value = initialVariant;
+            applyClientTheme(initialMode, initialVariant);
+
+            const persistTheme = () => {
+                const mode = themeModeSelect.value || "light";
+                const variant = themeVariantSelect.value || "default";
+                localStorage.setItem("crm_theme_mode", mode);
+                localStorage.setItem("crm_theme_variant", variant);
+                applyClientTheme(mode, variant);
+            };
+
+            themeModeSelect.addEventListener("change", persistTheme);
+            themeVariantSelect.addEventListener("change", persistTheme);
+
+            const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+            mediaQuery.addEventListener("change", () => {
+                if (themeModeSelect.value === "system") {
+                    applyClientTheme("system", themeVariantSelect.value || "default");
+                }
+            });
+        }
+    </script>
+    <script src="{% static 'js/client_main.js' %}"></script>
+</body>
+
+</html>

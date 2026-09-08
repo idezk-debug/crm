@@ -1,0 +1,187 @@
+        body.form-login-body {
+            background: linear-gradient(120deg, #001f3f, #0074D9, #7FDBFF);
+            background: url("{% static 'images/video' %}") no-repeat center center fixed;
+            background-size: 100% 100%;
+            animation: gradientShift 10s ease infinite;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .login-desk {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(300px);
+            border-radius: 15px;
+            box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.2);
+            transform-style: preserve-3d;
+            transition: all 0.5s ease;
+        }
+
+        .login-desk:hover {
+            transform: rotateY(5deg) rotateX(5deg);
+            box-shadow: 0 0 100px rgba(244, 242, 242, 0.5);
+        }
+
+        .detail-box img {
+            width: 100%;
+            max-width: 300px;
+            animation: floatLogo 4s ease-in-out infinite;
+            filter: drop-shadow(0 0 10px rgba(224, 16, 16, 0.8));
+            transform: perspective(1000px) rotateY(10deg);
+        }
+
+        @keyframes floatLogo {
+            0% {
+                transform: translateY(0px) rotateY(10deg);
+            }
+
+            50% {
+                transform: translateY(-15px) rotateY(-10deg);
+            }
+
+            100% {
+                transform: translateY(0px) rotateY(10deg);
+            }
+        }
+
+        .loginform {
+            padding: 40px;
+            color: white;
+            text-align: left;
+        }
+
+        .loginform h4 {
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgb(86, 194, 194);
+        }
+
+        .loginform p {
+            opacity: 0.8;
+        }
+
+        .form-control {
+            background-color: rgba(236, 221, 221, 0.1);
+            border: none;
+            color: white;
+            font-size: 13px;
+            padding-left: 40px;
+            padding-right: 45px;
+            transition: 0.3s;
+        }
+
+        .form-control::placeholder {
+            color: rgb(240, 236, 236);
+            font-style: italic;
+        }
+
+        .form-control:focus {
+            background-color: rgba(224, 31, 31, 0.2);
+            box-shadow: 0 0 10px rgb(216, 52, 52);
+        }
+
+        /* Left icon */
+        .input-group span.left-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgb(236, 242, 242);
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        /* Password wrapper fix */
+        .password-wrapper {
+            position: relative;
+        }
+
+        /* Right eye icon */
+        .password-toggle-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: rgb(59, 202, 202);
+            font-size: 16px;
+            z-index: 10;
+        }
+
+        .password-toggle-icon:hover {
+            color: #fff;
+        }
+
+        .btn-danger {
+            background: linear-gradient(90deg, #0074D9, #7FDBFF);
+            border: none;
+            border-radius: 25px;
+            width: 100%;
+            transition: 0.3s ease;
+            box-shadow: 0px 0px 10px rgba(0, 255, 255, 0.6);
+        }
+
+        .btn-danger:hover {
+
+            transform: scale(1.05);
+            background: linear-gradient(90deg, #d54a35, #0074D9);
+            box-shadow: 0px 0px 20px cyan;
+        }
+
+        #bg-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+
+        body {
+            margin: 0;
+            background: black;
+        }
+
+        @media (max-width: 768px) {
+            body.form-login-body {
+                overflow: scroll;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .login-desk {
+                transform: none;
+                box-shadow: none;
+            }
+
+            .login-desk:hover {
+                transform: none;
+                box-shadow: none;
+            }
+
+            .detail-box img {
+                transform: none;
+            }
+
+            .loginform {
+                padding: 40px 15px;
+            }
+
+            body {
+                overflow: scroll;
+            }
+        }

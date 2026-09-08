@@ -1,0 +1,227 @@
+{% extends 'admin_view/base.html' %}
+{% load static %}
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'css/admin_main.css' %}">
+
+
+<!-- ----------------------------------------------------
+     PAGE CONTENT
+---------------------------------------------------- -->
+<div class="page-content">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="page-title fw-bold">Client Details</h3>
+
+        <button class="btn btn-primary d-flex align-items-center" data-bs-toggle="modal"
+            data-bs-target="#addClientModal">
+            <i class="fa fa-plus me-2"></i> Add Client
+        </button>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            {% if clients %}
+            <div class="card">
+
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="fa-solid fa-list me-2 text-primary"></i> Client Records
+                    </h5>
+
+                    <div class="input-group input-group-sm" style="width: 220px;">
+                        <span class="input-group-text"><i class="fa fa-search"></i></span>
+                        <input type="search" id="clientSearch" class="form-control" placeholder="Search Client...">
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>S.No.</th>
+                                    {% if request.user.is_superuser %}<th>Company</th>{% endif %}
+                                    <th>Client Name</th>
+                                    <th>Client ID</th>
+                                    <th>Email</th>
+                                    <th>Service Registered</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="clientTable">
+                                {% for client in clients %}
+                                <tr class="client-row">
+                                    <td>{{ forloop.counter }}</td>
+                                    {% if request.user.is_superuser %}<td>{{ client.company.name }}</td>{% endif %}
+                                    <td>{{ client.client_name }}</td>
+                                    <td>{{ client.client_id }}</td>
+                                    <td>{{ client.business_email|default:"-" }}</td>
+                                    <td>{{ client.created_at|date:"d M Y" }}</td>
+                                    <td class="text-center">
+                                        <a href="{% url 'work_view' client.id %}"
+                                            class="btn btn-sm btn-outline-primary me-3 d-inline-flex align-items-center gap-2"
+                                            title="View more">
+                                            <span>View More</span>
+                                            <i class="fa-solid fa-arrow-right"></i>
+                                        </a>
+
+                                        <a href="#" class="text-danger delete-client" data-id="{{ client.id }}"
+                                            title="Delete Client">
+                                            <i class="fa fa-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+            {% else %}
+            <div class="text-center mt-5">
+                <h5 class="text-muted">No clients added yet.</h5>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+
+<!-- ----------------------------------------------------
+     ADD CLIENT MODAL
+---------------------------------------------------- -->
+<div class="modal fade" id="addClientModal" tabindex="-1" aria-labelledby="addClientModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="addClientModalLabel">Add New Client</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <form id="addClientForm">
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <input type="text" name="client_name" class="floating-input" required placeholder=" ">
+                        <label class="floating-label">Client Name</label>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="text" name="client_id" class="floating-input" required placeholder=" ">
+                        <label class="floating-label">Client ID</label>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="email" name="business_email" class="floating-input" placeholder=" ">
+                        <label class="floating-label">Email</label>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="text" name="business_phone" class="floating-input" placeholder=" ">
+                        <label class="floating-label">Phone</label>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="password" name="password" class="floating-input" minlength="8" required placeholder=" ">
+                        <label class="floating-label">Password (min 8 chars)</label>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="password" name="confirm_password" class="floating-input" minlength="8" required placeholder=" ">
+                        <label class="floating-label">Confirm Password</label>
+                    </div>
+
+
+
+                    <button type="submit" class="btn btn-primary w-100">Save Client</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ----------------------------------------------------
+     SCRIPT
+---------------------------------------------------- -->
+<script>
+        // Delete client
+    document.querySelectorAll('.delete-client').forEach(button => {
+        button.addEventListener('click', function (e) {
+            e.preventDefault();
+            const clientId = this.dataset.id;
+
+            const confirmMessage = `{% if request.user.is_superuser %}Are you sure you want to delete this client?{% else %}Are you sure you want to send this client delete request to admin for approval?{% endif %}`;
+
+            if (confirm(confirmMessage)) {
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+                fetch(`/delete-client/${clientId}/`, {
+                    method: 'POST',
+                    headers: { 'X-CSRFToken': csrfToken }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            alert(data.message);
+                            location.reload();
+                        } else {
+                            alert(data.message || 'Failed to delete client.');
+                        }
+                    })
+                    .catch(() => alert('Network error. Please try again.'));
+            }
+        });
+    });
+
+    // Add client
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('addClientForm');
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(form);
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            fetch("{% url 'add_client' %}", {
+                method: 'POST',
+                headers: { 'X-CSRFToken': csrfToken },
+                body: formData
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert(data.message);
+                        form.reset();
+                        bootstrap.Modal.getInstance(document.getElementById('addClientModal')).hide();
+                        location.reload();
+                    } else {
+                        alert(data.message || 'Error occurred.');
+                    }
+                })
+                .catch(() => alert('Network error. Please try again.'));
+        });
+
+        // Search client
+        const searchInput = document.getElementById('clientSearch');
+        const tableBody = document.getElementById('clientTable');
+
+        searchInput.addEventListener('keyup', function () {
+            const filter = this.value.toUpperCase();
+            const rows = tableBody.getElementsByClassName('client-row');
+
+            Array.from(rows).forEach(row => {
+                const text = row.textContent || row.innerText;
+                row.style.display = text.toUpperCase().includes(filter) ? "" : "none";
+            });
+        });
+    });
+</script>
+
+{% endblock %}

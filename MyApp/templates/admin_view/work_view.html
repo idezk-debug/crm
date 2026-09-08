@@ -1,0 +1,602 @@
+{% extends 'admin_view/base.html' %}
+{% load static %}
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'css/work_view.css' %}">
+
+
+<div class="page-header mb-4 d-flex justify-content-between align-items-center">
+    <h3 class="fw-bold">Client Name: {{ client.client_name }}</h3>
+
+    <div class="search-controls">
+        <div class="input-group" style="width: 250px;">
+            <input type="text" class="form-control" id="workSearchInput" placeholder="Search by Title..."
+                aria-label="Search Work Title">
+            <span class="input-group-text bg-white">
+                <i class="fa fa-search text-muted"></i>
+            </span>
+        </div>
+
+        <!-- NEW: Deadline Sort -->
+        <!-- <select class="form-select" id="deadlineSort" style="width: 200px;">
+            <option value="">Sort by Deadline</option>
+            <option value="asc">Nearest Deadline</option>
+            <option value="desc">Farthest Deadline</option>
+        </select> -->
+
+        <button class="btn btn-primary d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#addWorkModal">
+            <i class="fa fa-plus me-2"></i> Add Work
+        </button>
+    </div>
+
+
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white fw-bold">Service Details</div>
+    <div class="card-body">
+        {% if works %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>S.No.</th>
+                        <th>Services</th>
+                        <!-- <th>Description</th> -->
+                        <th>Service ID</th>
+                        <th>Registered</th>
+                        <th>Deadline</th>
+                        <th>
+                            <div class="d-inline-flex align-items-center gap-1">
+                                <span>Status</span>
+
+                                <div class="dropdown">
+                                    <a href="#" class="status-more" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fa-solid fa-caret-down"></i>
+                                    </a>
+
+                                    <ul class="dropdown-menu status-dropdown-menu">
+                                        <li>
+                                            <a class="dropdown-item status-option active" data-status="all">All</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item status-option" data-status="Pending">Pending</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item status-option" data-status="Ongoing">Ongoing</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item status-option" data-status="Completed">Completed</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </th>
+
+
+
+
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="workTableBody">
+                    {% for work in works %}
+                    <tr data-status="{{ work.status }}">
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ work.title }}</td>
+                        <td>{{ client.client_id }}</td>
+                        <td>{{ work.created_at|date:"d M Y" }}</td>
+                        <td>{{ work.deadline|date:"d M Y" }}</td>
+                        <td>
+                            {% if work.status == "Pending" %}
+                            <span class="badge bg-warning text-dark">{{ work.status }}</span>
+                            {% elif work.status == "Ongoing" %}
+                            <span class="badge bg-info text-dark">{{ work.status }}</span>
+                            {% else %}
+                            <span class="badge bg-success">{{ work.status }}</span>
+                            {% endif %}
+                        </td>
+                        <!-- <td class="text-center">...</td> -->
+
+
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-outline-secondary me-1 view-detail-btn" data-bs-toggle="modal"
+                                data-bs-target="#viewWorkModal" data-title="{{ work.title }}"
+                                data-description="{{ work.description }}" data-status="{{ work.status }}"
+                                data-date="{{ work.created_at|date:'d M Y' }}"
+                                data-deadline="{{ work.deadline|date:'d M Y' }}" aria-label="View Work Details"
+                                title="View Details">
+                                <i class="fa fa-eye"></i>
+                            </button>
+
+
+                            <button class="btn btn-sm btn-outline-primary me-1 edit-work-btn" data-id="{{ work.id }}"
+                                data-title="{{ work.title }}" data-description="{{ work.description }}"
+                                data-status="{{ work.status }}" data-deadline="{{ work.deadline|date:'Y-m-d' }}"
+                                aria-label="Edit Work" title="Edit Work">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+
+
+                            <a href="{% url 'upload_images' work.id %}" class="btn btn-sm btn-outline-info me-1"
+                                title="Upload files">
+                                <i class="fa fa-upload"></i>
+                            </a>
+
+                            <!-- Delete button placed right after upload -->
+                            <button class="btn btn-sm btn-outline-danger delete-work-btn" data-id="{{ work.id }}"
+                                aria-label="Delete Work" title="Delete Work">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </td>
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-3 alert alert-info m-0" id="noWorkMessage">
+            <p class="m-0">No work added yet for <strong>{{ client.client_name }}</strong>.</p>
+        </div>
+        {% endif %}
+        <div class="text-center py-3 alert alert-warning m-0 d-none" id="noSearchResultsMessage">
+            <p class="m-0">No work found matching your search term.</p>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="addWorkModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">Add Work</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addWorkForm">
+                    {% csrf_token %}
+                    <input type="hidden" name="client_id" value="{{ client.id }}">
+
+                    <div class="form-group">
+                        <input type="text" name="title" class="floating-input" required placeholder=" ">
+                        <label class="floating-label">Work Title *</label>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="date" name="deadline" class="floating-input" required placeholder=" ">
+                        <label class="floating-label">Deadline</label>
+                    </div>
+
+                    <div class="form-group">
+                        <textarea name="description" class="floating-input" placeholder=" "></textarea>
+                        <label class="floating-label">Description</label>
+                    </div>
+
+                    <div class="form-group select-wrapper">
+                        <select name="status" class="floating-input" required>
+                            <option value="Pending" selected>Pending</option>
+                            <option value="Ongoing">Ongoing</option>
+                            <option value="Completed">Completed</option>
+                        </select>
+                        <label class="floating-label">Work Status *</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 mt-2">Save Work</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="viewWorkModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Work Details</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Title:</strong> <span id="detailTitle"></span></p>
+                <p><strong>Status:</strong> <span id="detailStatus"></span></p>
+                <p><strong>Created Date:</strong> <span id="detailDate"></span></p>
+                <p><strong>Deadline:</strong> <span id="detailDeadline"></span></p>
+                <hr>
+                <p><strong>Description:</strong></p>
+                <p id="detailDescription" class="text-break"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editWorkModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Work</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editWorkForm">
+                    {% csrf_token %}
+                    <input type="hidden" name="work_id" id="editWorkId">
+
+                    <div class="form-group">
+                        <input type="text" name="title" id="editTitle" class="floating-input" required placeholder=" ">
+                        <label class="floating-label">Title</label>
+                    </div>
+
+                    <div class="form-group">
+                        <textarea id="editDescription" name="description" class="floating-input"
+                            placeholder=" "></textarea>
+                        <label class="floating-label">Description</label>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="date" name="deadline" id="editDeadline" class="floating-input" required
+                            placeholder=" ">
+                        <label class="floating-label">Deadline</label>
+                    </div>
+
+
+                    <div class="form-group select-wrapper">
+                        <select id="editStatus" name="status" class="floating-input" required>
+                            <option value="Pending">Pending</option>
+                            <option value="Ongoing">Ongoing</option>
+                            <option value="Completed">Completed</option>
+                        </select>
+                        <label class="floating-label">Status</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 mt-2">Update</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="entryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Work Entries</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="entryModalBody">
+                <p class='text-center p-3'>Loading...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const rows = document.querySelectorAll("#workTableBody tr");
+        const options = document.querySelectorAll(".status-option");
+
+        options.forEach(option => {
+            option.addEventListener("click", function () {
+                const selectedStatus = this.dataset.status;
+
+                options.forEach(o => o.classList.remove("active"));
+                this.classList.add("active");
+
+                rows.forEach(row => {
+                    const rowStatus = row.dataset.status;
+                    row.style.display =
+                        selectedStatus === "all" || rowStatus === selectedStatus
+                            ? ""
+                            : "none";
+                });
+            });
+        });
+    });
+</script>
+
+
+<script>
+    $(document).ready(function () {
+
+        $(".upload-work-btn").click(function () {
+
+            var workId = $(this).data("id");
+
+            // Show modal
+            $("#uploadArticleModal").modal("show");
+
+            // Load the AJAX template inside modal
+            $("#uploadArticleBody").html(`
+            <div class="text-center p-4">
+                <div class="spinner-border text-primary"></div>
+                <p>Loading upload page...</p>
+            </div>
+        `);
+
+            $.ajax({
+                url: "/article/upload/page/" + workId + "/",
+                method: "GET",
+                success: function (html) {
+                    $("#uploadArticleBody").html(html);
+                },
+                error: function () {
+                    $("#uploadArticleBody").html(`
+                    <div class="alert alert-danger text-center">
+                        Error loading upload page.
+                    </div>
+                `);
+                }
+            });
+        });
+
+    });
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        const editModal = new bootstrap.Modal(document.getElementById('editWorkModal'));
+        const addModal = new bootstrap.Modal(document.getElementById('addWorkModal'));
+        const entryModal = new bootstrap.Modal(document.getElementById("entryModal"));
+
+        // Utility function for showing notifications
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification alert alert-${type === 'error' ? 'danger' : type === 'success' ? 'success' : 'info'}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        }
+
+        // Utility function for button loading state
+        function toggleButtonLoading(button, isLoading) {
+            const originalText = button.dataset.originalText || button.innerHTML;
+            button.dataset.originalText = originalText;
+
+            if (isLoading) {
+                button.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Loading...';
+                button.disabled = true;
+            } else {
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }
+        }
+
+        // --- AJAX Handler for Entry Forms (Add/Edit) ---
+        function attachEntryFormAjax() {
+            const form = document.getElementById("entryForm");
+            const errorContainer = document.getElementById("formErrors");
+
+            if (!form) return;
+
+            form.addEventListener("submit", function (e) {
+                e.preventDefault();
+                const submitBtn = form.querySelector('button[type="submit"]');
+                toggleButtonLoading(submitBtn, true);
+
+                let url = form.getAttribute("action");
+                let formData = new FormData(form);
+
+                fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest",
+                        "X-CSRFToken": csrfToken
+                    },
+                    body: formData
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.status === "error") {
+                            // Display validation errors
+                            if (errorContainer) errorContainer.innerHTML = data.errors_html;
+                            showNotification("Validation error. Check the form.", "error");
+                        } else if (data.status === "success") {
+                            showNotification("Saved successfully");
+                            // Reset form (for Add)
+                            form.reset();
+                            // Refresh entries list (Assuming it reloads the entries table)
+                            if (document.getElementById("entriesTableContainer")) {
+                                document.getElementById("entriesTableContainer").innerHTML = data.entries_html;
+                            }
+                            // Close modal if it's an 'add' operation, keep open for 'edit' to allow quick changes
+                            if (url.includes('add')) entryModal.hide();
+                        }
+                    })
+                    .catch(() => showNotification('Network error. Try again.', 'error'))
+                    .finally(() => toggleButtonLoading(submitBtn, false));
+            });
+        }
+
+
+        // --- Work CRUD Operations ---
+
+        // View details
+        document.querySelectorAll('.view-detail-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.getElementById('detailTitle').textContent = btn.dataset.title;
+                document.getElementById('detailDescription').textContent = btn.dataset.description;
+                document.getElementById('detailDate').textContent = btn.dataset.date;
+                document.getElementById('detailDeadline').textContent = btn.dataset.deadline;
+
+                const statusEl = document.getElementById('detailStatus');
+                const s = btn.dataset.status;
+
+                const badgeClass =
+                    s === "Pending" ? "bg-warning text-dark" :
+                        s === "Ongoing" ? "bg-info text-dark" :
+                            "bg-success";
+
+                statusEl.innerHTML = `<span class="badge ${badgeClass}">${s}</span>`;
+            });
+        });
+
+
+        // Edit Work - Setup modal and submit handler
+        document.querySelectorAll('.edit-work-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.getElementById('editWorkId').value = btn.dataset.id;
+                document.getElementById('editTitle').value = btn.dataset.title;
+                document.getElementById('editDescription').value = btn.dataset.description;
+                document.getElementById('editStatus').value = btn.dataset.status;
+                document.getElementById('editDeadline').value = btn.dataset.deadline;
+
+                editModal.show();
+            });
+        });
+
+
+        document.getElementById('editWorkForm').onsubmit = e => {
+            e.preventDefault();
+            const form = e.target;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const workId = form.querySelector('#editWorkId').value;
+            toggleButtonLoading(submitBtn, true);
+
+            fetch(`/work/update/${workId}/`, {
+                method: 'POST',
+                headers: { 'X-CSRFToken': csrfToken },
+                body: new FormData(form)
+            })
+                .then(res => res.json())
+                .then(data => {
+                    showNotification(data.message, data.status);
+                    if (data.status === 'success') { editModal.hide(); location.reload(); }
+                })
+                .catch(() => showNotification('Network error. Try again.', 'error'))
+                .finally(() => toggleButtonLoading(submitBtn, false));
+        };
+
+        // Add Work - Submit handler
+        document.getElementById('addWorkForm').onsubmit = e => {
+            e.preventDefault();
+            const form = e.target;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            toggleButtonLoading(submitBtn, true);
+
+            fetch("{% url 'add_work' %}", {
+                method: 'POST',
+                headers: { 'X-CSRFToken': csrfToken },
+                body: new FormData(form)
+            })
+                .then(res => res.json())
+                .then(data => {
+                    showNotification(data.message, data.status);
+                    if (data.status === 'success') { form.reset(); addModal.hide(); location.reload(); }
+                })
+                .catch(() => showNotification('Network error. Try again.', 'error'))
+                .finally(() => toggleButtonLoading(submitBtn, false));
+        };
+
+        // Delete Work
+        document.addEventListener("click", function (e) {
+            const btn = e.target.closest(".delete-work-btn");
+            if (!btn) return;
+
+            const workId = btn.dataset.id;
+            const confirmMessage = `{% if request.user.is_superuser %}Are you sure you want to delete this work?{% else %}Are you sure you want to send this work delete request to admin for approval?{% endif %}`;
+            if (!confirm(confirmMessage)) return;
+
+            fetch(`/work/delete/${workId}/`, {
+                method: "POST",
+                headers: { "X-CSRFToken": csrfToken }
+            })
+                .then(res => res.json())
+                .then(data => {
+                    showNotification(data.message || "Work deleted.", data.status);
+                    if (data.status === "success") {
+                        setTimeout(() => location.reload(), 500);
+                    }
+                })
+                .catch(() => showNotification("Error deleting work", "error"));
+        });
+
+        // --- Work Entry/Upload Operations (Dynamic AJAX Modal) ---
+
+        // Open Entry Modal (Upload Work Button)
+        // document.querySelectorAll(".upload-work-btn").forEach(btn => {
+        //     btn.addEventListener("click", () => {
+        //         const workId = btn.dataset.id;
+
+        //         // Show loading state
+        //         document.getElementById("entryModalBody").innerHTML =
+        //             "<p class='text-center p-3'><span class='spinner-border text-primary' role='status'></span><br>Loading Entries...</p>";
+        //         entryModal.show();
+
+        //         // Load form/entries table using AJAX
+        //         fetch(`/work/${workId}/entry/`, { // URL corrected to match assumed endpoint
+        //             headers: { "X-Requested-With": "XMLHttpRequest" }
+        //         })
+        //             .then(res => res.text())
+        //             .then(html => {
+        //                 document.getElementById("entryModalBody").innerHTML = html;
+        //                 // Attach AJAX submit handler AFTER form loads
+        //                 attachEntryFormAjax();
+        //             })
+        //             .catch(() => {
+        //                 document.getElementById("entryModalBody").innerHTML =
+        //                     "<p class='text-danger text-center'>Error loading entries/form.</p>";
+        //                 showNotification('Error loading work entries.', 'error');
+        //             });
+        //     });
+        // });
+
+        // --- Search Functionality ---
+        const searchInput = document.getElementById('workSearchInput');
+        const workTableBody = document.getElementById('workTableBody');
+        const noWorkMessage = document.getElementById('noWorkMessage');
+        const noSearchResultsMessage = document.getElementById('noSearchResultsMessage');
+        const tableContainer = document.querySelector('.table-responsive');
+
+        if (searchInput) {
+            searchInput.addEventListener('keyup', function () {
+                const filter = this.value.toLowerCase();
+                const rows = workTableBody ? workTableBody.getElementsByTagName('tr') : [];
+                let found = false;
+                const totalRows = rows.length;
+
+                for (let i = 0; i < totalRows; i++) {
+                    // Assuming 'Title' is the 2nd column (index 1)
+                    const titleCell = rows[i].getElementsByTagName('td')[1];
+                    if (titleCell) {
+                        const titleText = titleCell.textContent || titleCell.innerText;
+                        if (titleText.toLowerCase().indexOf(filter) > -1) {
+                            rows[i].style.display = "";
+                            found = true;
+                        } else {
+                            rows[i].style.display = "none";
+                        }
+                    }
+                }
+
+                // Logic for showing/hiding messages
+                if (noWorkMessage) noWorkMessage.classList.add('d-none'); // Hide the default 'No work yet' message
+                if (tableContainer) tableContainer.classList.toggle('d-none', !totalRows || !found);
+
+                if (noSearchResultsMessage) {
+                    if (totalRows > 0 && !found) {
+                        noSearchResultsMessage.classList.remove('d-none');
+                    } else {
+                        noSearchResultsMessage.classList.add('d-none');
+                    }
+                }
+
+                // Re-show the default 'No work yet' if the search is cleared and original list was empty
+                if (totalRows === 0 && !filter && noWorkMessage) {
+                    noWorkMessage.classList.remove('d-none');
+                    if (tableContainer) tableContainer.classList.remove('d-none');
+                }
+            });
+        }
+    });
+</script>
+
+{% endblock %}

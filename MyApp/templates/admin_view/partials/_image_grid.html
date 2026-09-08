@@ -1,0 +1,137 @@
+{% if file_groups.images or file_groups.documents or file_groups.excel or file_groups.others %}
+
+  {% if file_groups.images %}
+  <section class="file-group-block">
+    <div class="file-group-head">
+      <h6><i class="bi bi-images me-2"></i>Images</h6>
+      <span class="group-count">{{ file_groups.images|length }}</span>
+    </div>
+    <div class="file-group-grid">
+      {% for f in file_groups.images %}
+      <div class="file-card" id="file-{{ f.id }}">
+        <div class="file-card-top">
+          <span class="file-icon-wrap" title="{{ f.extension|upper }}">
+            <i class="bi {{ f.file_icon }}"></i>
+          </span>
+          <div class="file-title-wrap">
+            <div class="file-name" title="{{ f.original_name }}">{{ f.original_name }}</div>
+            <div class="file-type">IMAGE</div>
+          </div>
+        </div>
+        <div class="file-info">Uploaded: {{ f.uploaded_at|date:"d M Y, h:i A" }}</div>
+        <div class="file-info">Expires: {{ f.expires_at|date:"d M Y, h:i A" }}</div>
+        <div class="file-actions mt-2">
+          <a class="action-btn preview" href="{% url 'preview_work_file' f.id %}" target="_blank">Preview</a>
+          <a class="action-btn download" href="{% url 'download_work_file' f.id %}">Download</a>
+          {% if can_delete_files %}
+          <button class="action-btn delete" type="button" onclick="deleteFile({{ f.id }})">Delete</button>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if file_groups.documents %}
+  <section class="file-group-block">
+    <div class="file-group-head">
+      <h6><i class="bi bi-file-earmark-text me-2"></i>Documents</h6>
+      <span class="group-count">{{ file_groups.documents|length }}</span>
+    </div>
+    <div class="file-group-grid">
+      {% for f in file_groups.documents %}
+      <div class="file-card" id="file-{{ f.id }}">
+        <div class="file-card-top">
+          <span class="file-icon-wrap" title="{{ f.extension|upper }}">
+            <i class="bi {{ f.file_icon }}"></i>
+          </span>
+          <div class="file-title-wrap">
+            <div class="file-name" title="{{ f.original_name }}">{{ f.original_name }}</div>
+            <div class="file-type">{{ f.extension|upper }}</div>
+          </div>
+        </div>
+        <div class="file-info">Uploaded: {{ f.uploaded_at|date:"d M Y, h:i A" }}</div>
+        <div class="file-info">Expires: {{ f.expires_at|date:"d M Y, h:i A" }}</div>
+        <div class="file-actions mt-2">
+          <a class="action-btn preview" href="{% url 'preview_work_file' f.id %}" target="_blank">Preview</a>
+          <a class="action-btn download" href="{% url 'download_work_file' f.id %}">Download</a>
+          {% if can_delete_files %}
+          <button class="action-btn delete" type="button" onclick="deleteFile({{ f.id }})">Delete</button>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if file_groups.excel %}
+  <section class="file-group-block">
+    <div class="file-group-head">
+      <h6><i class="bi bi-file-earmark-excel me-2"></i>Excel</h6>
+      <span class="group-count">{{ file_groups.excel|length }}</span>
+    </div>
+    <div class="file-group-grid">
+      {% for f in file_groups.excel %}
+      <div class="file-card" id="file-{{ f.id }}">
+        <div class="file-card-top">
+          <span class="file-icon-wrap" title="{{ f.extension|upper }}">
+            <i class="bi {{ f.file_icon }}"></i>
+          </span>
+          <div class="file-title-wrap">
+            <div class="file-name" title="{{ f.original_name }}">{{ f.original_name }}</div>
+            <div class="file-type">{{ f.extension|upper }}</div>
+          </div>
+        </div>
+        <div class="file-info">Uploaded: {{ f.uploaded_at|date:"d M Y, h:i A" }}</div>
+        <div class="file-info">Expires: {{ f.expires_at|date:"d M Y, h:i A" }}</div>
+        <div class="file-actions mt-2">
+          <a class="action-btn preview" href="{% url 'preview_work_file' f.id %}" target="_blank">Preview</a>
+          <a class="action-btn download" href="{% url 'download_work_file' f.id %}">Download</a>
+          {% if can_delete_files %}
+          <button class="action-btn delete" type="button" onclick="deleteFile({{ f.id }})">Delete</button>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if file_groups.others %}
+  <section class="file-group-block">
+    <div class="file-group-head">
+      <h6><i class="bi bi-file-earmark me-2"></i>Other Files</h6>
+      <span class="group-count">{{ file_groups.others|length }}</span>
+    </div>
+    <div class="file-group-grid">
+      {% for f in file_groups.others %}
+      <div class="file-card" id="file-{{ f.id }}">
+        <div class="file-card-top">
+          <span class="file-icon-wrap" title="{{ f.extension|upper }}">
+            <i class="bi {{ f.file_icon }}"></i>
+          </span>
+          <div class="file-title-wrap">
+            <div class="file-name" title="{{ f.original_name }}">{{ f.original_name }}</div>
+            <div class="file-type">{{ f.extension|upper }}</div>
+          </div>
+        </div>
+        <div class="file-info">Uploaded: {{ f.uploaded_at|date:"d M Y, h:i A" }}</div>
+        <div class="file-info">Expires: {{ f.expires_at|date:"d M Y, h:i A" }}</div>
+        <div class="file-actions mt-2">
+          <a class="action-btn preview" href="{% url 'preview_work_file' f.id %}" target="_blank">Preview</a>
+          <a class="action-btn download" href="{% url 'download_work_file' f.id %}">Download</a>
+          {% if can_delete_files %}
+          <button class="action-btn delete" type="button" onclick="deleteFile({{ f.id }})">Delete</button>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+{% else %}
+<p class="empty-text">No files uploaded yet.</p>
+{% endif %}

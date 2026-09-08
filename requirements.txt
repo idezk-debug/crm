@@ -1,0 +1,7 @@
+dj-database-url==3.1.2
+Django==6.0.3
+django-cities-light==3.11
+phonenumbers==9.0.37
+Pillow==12.1.1
+psycopg[binary]==3.2.10
+whitenoise==6.12.0
