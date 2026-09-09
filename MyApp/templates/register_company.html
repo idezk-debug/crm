@@ -321,7 +321,7 @@
                             <select name="state" id="stateSelect" class="form-select" required>
                                 <option value="">Select State</option>
                                 {% for state in states %}
-                                <option value="{{ state.id }}" data-country="{{ state.country_id }}" data-name="{{ state.name|escapejs }}" {% if selected_state == state.id|stringformat:'s' %}selected{% endif %}>{{ state.name }}</option>
+                                <option value="{{ state.id }}" data-country="{{ state.country_id }}" data-name="{{ state.name|escape }}" {% if selected_state == state.id|stringformat:'s' %}selected{% endif %}>{{ state.name }}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -330,7 +330,7 @@
                             <select name="district" id="districtSelect" class="form-select" required>
                                 <option value="">Select District</option>
                                 {% for district in districts %}
-                                <option value="{{ district.id }}" data-country="{{ district.country_id }}" data-state="{{ district.region_id }}" data-name="{{ district.name|escapejs }}" {% if selected_district == district.id|stringformat:'s' %}selected{% endif %}>{{ district.name }}</option>
+                                <option value="{{ district.id }}" data-country="{{ district.country_id }}" data-state="{{ district.region_id }}" data-name="{{ district.name|escape }}" {% if selected_district == district.id|stringformat:'s' %}selected{% endif %}>{{ district.name }}</option>
                                 {% endfor %}
                             </select>
                         </div>

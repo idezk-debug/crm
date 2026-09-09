@@ -109,34 +109,36 @@ WSGI_APPLICATION = 'MyProject.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-# _db_engine = os.getenv("DJANGO_DB_ENGINE", "sqlite3").lower()
-
-# if _db_engine in {"postgresql", "postgres"}:
-#     DATABASES = {
-#         "default": {
-#             "ENGINE": "django.db.backends.postgresql",
-#             "NAME": os.getenv("DJANGO_DB_NAME", "site_app"),
-#             "USER": os.getenv("DJANGO_DB_USER", "postgres"),
-#             "PASSWORD": os.getenv("DJANGO_DB_PASSWORD", ""),
-#             "HOST": os.getenv("DJANGO_DB_HOST", "localhost"),
-#             "PORT": os.getenv("DJANGO_DB_PORT", "5432"),
-#         }
-#     }
-# else:
-#     DATABASES = {
-#         "default": {
-#             "ENGINE": "django.db.backends.sqlite3",
-#             "NAME": Path(os.getenv("DJANGO_DB_PATH", str(BASE_DIR / "db.sqlite3"))),
-#         }
-#     }
+# Use conn_max_age=0 during large migrations/imports to prevent pool timeout
+CONN_MAX_AGE = int(os.getenv("DJANGO_CONN_MAX_AGE", "0"))
 
 DATABASES = {
     'default': dj_database_url.config(
         default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
-        conn_max_age=600,
+        conn_max_age=CONN_MAX_AGE,
         conn_health_checks=True,
     )
 }
+
+# Keepalive options for PostgreSQL to prevent dropouts on long operations
+if DATABASES['default']['ENGINE'] == 'django.db.backends.postgresql':
+    DATABASES['default'].setdefault('OPTIONS', {})
+    DATABASES['default']['OPTIONS'].update({
+        'keepalives': 1,
+        'keepalives_idle': 30,
+        'keepalives_interval': 10,
+        'keepalives_count': 5,
+    })
+
+
+# Cities Light Configuration
+# Disables multi-language translations to drastically decrease import time & DB operations
+CITIES_LIGHT_TRANSLATION_LANGUAGES = ['en']
+
+# Optional: Limit imports to specific countries if you don't need all 200+ countries.
+# Example to import only India & USA (uncomment if applicable):
+# CITIES_LIGHT_APP_DEFINED_FIELDS = ['id', 'name', 'country']
+# CITIES_LIGHT_INCLUDE_COUNTRIES = ['IN', 'US']
 
 
 # Password validation

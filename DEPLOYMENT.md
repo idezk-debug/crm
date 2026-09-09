@@ -15,34 +15,26 @@ In the existing Render web service, configure:
 
 ```text
 Build Command: pip install -r requirements.txt && bash build.sh
-Start Command: python manage.py migrate --noinput && gunicorn MyProject.wsgi:application --bind 0.0.0.0:$PORT --workers 2
+Start Command: gunicorn MyProject.wsgi:application --bind 0.0.0.0:$PORT --workers 2
 ```
 
 Add the existing Render PostgreSQL connection string to the web service as `DATABASE_URL`. Also set `DJANGO_SECRET_KEY` to a strong secret and `DJANGO_DEBUG=False`. The existing database remains the source of production data.
 
-If the Pre-Deploy Command field is available on your Render plan, you can use:
+The build script automatically runs `collectstatic`, migrations, and `cities_light`, so no Render Shell or Pre-Deploy Command is required. Leave the Pre-Deploy Command empty if the field is locked on your plan.
 
-```bash
-python manage.py migrate && python manage.py cities_light
+Because the free tier does not provide Render Shell access, create the first admin account locally using the Render database URL. In PowerShell, run:
+
+```powershell
+$env:DATABASE_URL="paste-your-render-postgresql-url-here"
+& .\env\Scripts\python.exe manage.py createsuperuser
+Remove-Item Env:DATABASE_URL
 ```
 
-If that field is locked, use the start command above and run the city data import once from the Render Shell after the first deploy:
-
-```bash
-python manage.py cities_light
-```
-
-Migrations run automatically before Gunicorn starts, so schema updates still apply on each deploy.
+Use the Render PostgreSQL **External Database URL** temporarily, and never commit it to Git.
 
 The repository includes `render.yaml` as a reference for these web-service settings; its `DATABASE_URL` is intentionally entered manually so it does not create or replace your existing database.
 
-After deployment, open the existing service URL and create the platform owner:
-
-```bash
-python manage.py createsuperuser
-```
-
-Run that command from a Render Shell, or create the user locally against the hosted database by setting the same `DATABASE_URL`.
+After deployment, open the existing service URL. Create the platform owner locally using the hosted database procedure above.
 
 For a custom domain, add these Render environment variables:
 
@@ -110,6 +102,8 @@ python manage.py cities_light
 python manage.py collectstatic --noinput
 python manage.py createsuperuser
 ```
+
+These commands are for self-hosted deployments or local development. Render runs the first three automatically from `build.sh`; use the local PowerShell procedure above for `createsuperuser` because the free tier has no Shell access.
 
 ## 6. Gunicorn Service
 
